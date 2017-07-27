@@ -4,7 +4,9 @@
 	"description": "A Discord bot for psychos.",
 	"main": "src/index.js",
 	"scripts": {
+		"start": "node build/index.js",
 		"build": "babel src -d build",
+		"build:watch": "babel src -d build --watch",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
