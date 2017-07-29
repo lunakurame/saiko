@@ -26,6 +26,7 @@
 	},
 	"homepage": "https://github.com/kurogetsusai/saiko#readme",
 	"dependencies": {
+		"colors": "^1.1.2",
 		"discord.js": "^11.1.0"
 	},
 	"devDependencies": {
