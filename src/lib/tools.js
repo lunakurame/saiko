@@ -5,6 +5,14 @@ export function addTrailingSlash(text) {
 	return text + (text.endsWith('/') ? '' : '/');
 }
 
+/** Capitalizes first character of a string.
+ * @param {string} text - input text
+ * @returns {string} - the same text, but with the first character capitalized */
+export function capitalizeFirstCharacter(text) {
+	return [...text][0].toUpperCase() +
+	       [...text].slice(1).join('');
+}
+
 /** Inserts spaces before and after text to center it on the screen.
  *  The lenght of the resulting text matches the width of the screen.
  * @param {string} text - text to be centered

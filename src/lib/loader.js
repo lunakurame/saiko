@@ -2,7 +2,7 @@ import fs from 'fs';
 
 /** Loads a JSON file.
  * @param {string} fileName - the JSON file's name
- * @returns {Promise<object|Error>} - a promise, resolves to the loaded object */
+ * @returns {Promise<object|Error>} - a promise to the loaded object */
 export function loadJSON(fileName) {
 	return new Promise((resolve, reject) => {
 		fs.readFile(fileName, (error, data) => {
@@ -18,7 +18,7 @@ export function loadJSON(fileName) {
  * @param {string} fileName - the JSON file's name
  * @param {object} data - the saved object
  * @param {function} [serialize] - a function used to serialize data before saving
- * @returns {Promise<undefined|Error>} - a promise, resolves to nothing */
+ * @returns {Promise<undefined|Error>} - an empty promise */
 export function saveJSON(fileName, data, serialize) {
 	return new Promise((resolve, reject) => {
 		const serializedData = serialize?
@@ -29,6 +29,20 @@ export function saveJSON(fileName, data, serialize) {
 				return reject(error);
 
 			resolve();
+		});
+	});
+}
+
+/** Lists all files (including folders) in a directory.
+ * @param {string} dirName - path to the listed directory
+ * @returns {Promise<array|Error>} - a promise to an array of file names */
+export function listDirectory(dirName) {
+	return new Promise((resolve, reject) => {
+		fs.readdir(dirName, (error, files) => {
+			if (error)
+				return reject(error);
+
+			resolve(files);
 		});
 	});
 }

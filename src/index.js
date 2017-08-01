@@ -6,11 +6,16 @@ const logger = new Logger({useConsole: true, showDebug: true});
 const saiko  = new Saiko('./data', logger);
 
 saiko.loadData().then(data => {
-	saiko.login().then(token => {
-		console.log('OK');
+	saiko.loadPlugins().then(plugins => {
+		saiko.enablePlugins();
+
+		saiko.login().then(token => {
+		}).catch(error => {
+			logger.panic('Index', 'Cannot log in', error);
+		});
 	}).catch(error => {
-		logger.panic('Index', 'Cannot log in', error)
+		logger.panic('Index', 'Cannot load plugins', error);
 	});
 }).catch(error => {
-	logger.panic('Index', 'Cannot load data', error)
+	logger.panic('Index', 'Cannot load data', error);
 });
