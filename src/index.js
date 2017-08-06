@@ -2,7 +2,7 @@ import Logger from './lib/logger.js';
 import Saiko from './saiko.js';
 import * as loader from './lib/loader.js';
 
-const logger = new Logger({useConsole: true, showDebug: true});
+const logger = new Logger({showDebug: true});
 const saiko  = new Saiko('./data', logger);
 
 saiko.loadData().then(data => {

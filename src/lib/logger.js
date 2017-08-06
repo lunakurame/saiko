@@ -5,13 +5,15 @@ export default class Logger {
 	/** Creates a new Logger object.
 	 * @param {object} options - logging options
 	 * @param {boolean} [options.enabled=true] - enables logging
+	 * @param {boolean} [options.showLog=true] - show log messages
 	 * @param {boolean} [options.showDebug=false] - show debug messages
 	 * @param {boolean} [options.showWarnings=true] - show warning messages
 	 * @param {boolean} [options.showErrors=true] - show error messages
 	 * @param {boolean} [options.showPanics=true] - show panic messages
 	 * @returns {Logger} - a Logger object */
-	constructor({enabled, showDebug, showWarnings, showErrors, showPanics}) {
+	constructor({enabled, showLog, showDebug, showWarnings, showErrors, showPanics}) {
 		this.enabled      = enabled      !== false;
+		this.showLog      = showLog      !== false;
 		this.showDebug    = showDebug    === true;
 		this.showWarnings = showWarnings !== false;
 		this.showErrors   = showErrors   !== false;
@@ -32,15 +34,39 @@ export default class Logger {
 		this.enabled = false;
 	}
 
+	/** Formats a place name used in the logging functions.
+	 * @param {string} placeName - the place name to be formatted
+	 * @returns {string} - formatted place name */
+	formatPlaceName(placeName) {
+		return ` ${placeName} `.bgBlack.white;
+	}
+
 	/** Formats a module name used in the logging functions.
 	 * @param {string} moduleName - the module name to be formatted
 	 * @returns {string} - formatted module name */
 	formatModuleName(moduleName) {
-		return ` ${moduleName} `.bgBlack.white.replace(/(#|\.)/g, '$&'.cyan);
+		return this.formatPlaceName(moduleName).replace(/(#|\.)/g, '$&'.cyan);
+	}
+
+	/** Logs a log message.
+	 * @param {string} status - message status
+	 * @param {string} placeName - name of the place, which generated the message
+	 * @param {string} text - text of the message
+	 * @param {...string} messages - messages to be logged
+	 * @returns {void} */
+	log(status, placeName, text, ...messages) {
+		if (!this.enabled || !this.showLog)
+			return;
+
+		const place = this.formatPlaceName(placeName);
+
+		console.log(`${status}${place} ${text}`);
+		messages.forEach(message => console.log(message));
+		console.log('');
 	}
 
 	/** Logs a debug message.
-	 * @param {moduleName} - name of the module, which generated the message
+	 * @param {string} moduleName - name of the module, which generated the message
 	 * @param {string} text - text of the message
 	 * @returns {void} */
 	debug(moduleName, text) {
@@ -54,7 +80,7 @@ export default class Logger {
 	}
 
 	/** Logs a warning message.
-	 * @param {moduleName} - name of the module, which generated the message
+	 * @param {string} moduleName - name of the module, which generated the message
 	 * @param {string} text - text of the message
 	 * @returns {void} */
 	warn(moduleName, text) {
@@ -68,7 +94,7 @@ export default class Logger {
 	}
 
 	/** Logs an error message.
-	 * @param {moduleName} - name of the module, which generated the message
+	 * @param {string} moduleName - name of the module, which generated the message
 	 * @param {string} text - text of the message
 	 * @param {...Error} errors - errors to be logged
 	 * @returns {void} */
@@ -85,7 +111,7 @@ export default class Logger {
 	}
 
 	/** Logs a panic message.
-	 * @param {moduleName} - name of the module, which generated the message
+	 * @param {string} moduleName - name of the module, which generated the message
 	 * @param {string} text - text of the message
 	 * @param {...Error} errors - errors to be logged
 	 * @returns {void} */
