@@ -23,3 +23,19 @@ export function centerConsoleLine(text) {
 	return ' '.repeat(Math.floor(paddingWidth / 2)) + text +
 	       ' '.repeat(Math.ceil(paddingWidth / 2));
 }
+
+/** Converts a string of command parameters to an array. Parameters are expected
+ *  to be separated by any number of whitespace characters. Double quotes are
+ *  supported, as well as escaping them with a backslash.
+ * @param {string} text - a string of command parameters
+ * @returns {array} - an array of parsed command parameters */
+export function parseCommandParameters(text) {
+	return text
+		.match(/[^"\s]+|"([^\\"]|\\.)+"/g)
+		.map(param => param.startsWith('"') && param.endsWith('"')?
+			param
+				.slice(1, -1)
+				.replace(/[\\]+/g, backslashes => backslashes.slice(1)):
+			param
+		);
+}
