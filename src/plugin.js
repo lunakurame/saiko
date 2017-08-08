@@ -19,10 +19,12 @@ export default class Plugin {
 
 		/** @type {Saiko} - a Saiko object, which is gonna use the plugin */
 		this.saiko       = saiko;
-		/** @type {string} - plugin's prefix */
-		this.prefix      = '`';
+		/** @type {string} - plugin's name */
+		this.name        = this.constructor.name;
 		/** @type {string} - plugin's description */
 		this.description = `This plugin doesn't have a description.`;
+		/** @type {string} - plugin's prefix */
+		this.prefix      = '`';
 		/** @type {array<PluginCommand>} - plugin's commands */
 		this.commands    = [];
 	}
@@ -47,7 +49,7 @@ export default class Plugin {
 			typeof trigger === 'function' && trigger(message),
 			trigger instanceof RegExp && message.content.match(trigger)
 		].some(condition => condition);
-	};
+	}
 
 	/** Runs a specific command. If the answer returns a falsey value, a help message is used instead.
 	 * @param {Discord.Message} message - the message which triggered that command
@@ -65,8 +67,8 @@ export default class Plugin {
 		const answer = expandFunction(action             , message, ...commandParams) ||
 		               expandFunction(help || defaultHelp, message, ...commandParams);
 
-		message.channel.send(...(Array.isArray(answer) ? answer : [answer]));
-	};
+		message.channel.send(...Array.isArray(answer) ? answer : [answer]);
+	}
 
 	/** Checks if the message triggers any command and runs it.
 	 * @param {Discord.Message} message - the message which might trigger a command
@@ -75,7 +77,7 @@ export default class Plugin {
 		if (!message.content.startsWith(this.prefix))
 			return false;
 
-		for (let command of this.commands)
+		for (const command of this.commands)
 			if (this.doesMessageTriggerCommand(message, command)) {
 				this.runCommand(message, command);
 				return true;
@@ -87,10 +89,10 @@ export default class Plugin {
 	/** Handles the 'message' event.
 	 * @param {Discord.Message} message - new message
 	 * @returns {void} */
-	onMessage(message) {}
+	onMessage(message) {} // eslint-disable-line
 
 	/** Handles the 'messageDelete' event.
 	 * @param {Discord.Message} message - deleted message
 	 * @returns {void} */
-	onMessageDelete(message) {}
+	onMessageDelete(message) {} // eslint-disable-line
 }

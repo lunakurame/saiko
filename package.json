@@ -2,11 +2,12 @@
 	"name": "saiko",
 	"version": "0.1.0",
 	"description": "A Discord bot for psychos.",
-	"main": "src/index.js",
+	"main": "build/index.js",
 	"scripts": {
-		"start": "node build/index.js",
 		"build": "babel src -d build",
 		"build:watch": "babel src -d build --watch",
+		"lint": "eslint src",
+		"start": "node build/index.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
@@ -31,6 +32,7 @@
 	},
 	"devDependencies": {
 		"babel-cli": "^6.24.1",
-		"babel-preset-env": "^1.6.0"
+		"babel-preset-env": "^1.6.0",
+		"eslint": "^4.4.1"
 	}
 }

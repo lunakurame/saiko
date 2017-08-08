@@ -9,7 +9,7 @@ export function loadJSON(fileName) {
 			if (error)
 				return reject(error);
 
-			resolve(JSON.parse(data));
+			return resolve(JSON.parse(data));
 		});
 	});
 }
@@ -21,14 +21,15 @@ export function loadJSON(fileName) {
  * @returns {Promise<undefined|Error>} - an empty promise */
 export function saveJSON(fileName, data, serialize) {
 	return new Promise((resolve, reject) => {
-		const serializedData = serialize?
-			serialize(data) : JSON.stringify(data, null, '\t');
+		const serializedData = serialize ?
+			serialize(data) :
+			JSON.stringify(data, null, '\t');
 
-		fs.writeFile(fileName, serializedData, (error, data) => {
+		fs.writeFile(fileName, serializedData, error => {
 			if (error)
 				return reject(error);
 
-			resolve();
+			return resolve();
 		});
 	});
 }
@@ -42,7 +43,7 @@ export function listDirectory(dirName) {
 			if (error)
 				return reject(error);
 
-			resolve(files);
+			return resolve(files);
 		});
 	});
 }

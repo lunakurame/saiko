@@ -1,5 +1,5 @@
+import 'colors';
 import Discord from 'discord.js';
-import colors from 'colors';
 import Plugin from '../plugin.js';
 
 export default class LogPlugin extends Plugin {
@@ -8,6 +8,9 @@ export default class LogPlugin extends Plugin {
 	 * @returns {LogPlugin} - a LogPlugin object */
 	constructor(saiko) {
 		super(saiko);
+
+		this.name = 'log';
+		this.description = 'Logs messages.';
 	}
 
 	formatMessageSource(message) {
@@ -22,12 +25,13 @@ export default class LogPlugin extends Plugin {
 			},
 			{
 				channelType: Discord.GroupDMChannel,
-				name: message => message.channel.name?
-					`Group: ${message.channel.name}` : `Unnamed group (ID: ${message.channel.id})`
+				name: message => message.channel.name ?
+					`Group: ${message.channel.name}` :
+					`Unnamed group (ID: ${message.channel.id})`
 			}
 		];
 
-		for (let rule of rules)
+		for (const rule of rules)
 			if (message.channel instanceof rule.channelType)
 				return rule.name(message);
 
@@ -38,8 +42,8 @@ export default class LogPlugin extends Plugin {
 		const rules = [
 			{
 				channelType: Discord.TextChannel,
-				name: message => message.member.displayName === message.author.username?
-					`${message.author.username} #${message.author.discriminator}`:
+				name: message => message.member.displayName === message.author.username ?
+					`${message.author.username} #${message.author.discriminator}` :
 					`${message.member.nickname} (${message.author.username} #${message.author.discriminator})`
 			},
 			{
@@ -52,7 +56,7 @@ export default class LogPlugin extends Plugin {
 			}
 		];
 
-		for (let rule of rules)
+		for (const rule of rules)
 			if (message.channel instanceof rule.channelType)
 				return rule.name(message);
 

@@ -1,5 +1,4 @@
-import colors from 'colors';
-import * as tools from './tools.js';
+import 'colors';
 
 export default class Logger {
 	/** Creates a new Logger object.
@@ -125,6 +124,6 @@ export default class Logger {
 		console.error(`${status}${module} ${text}`);
 		errors.forEach(error => console.error(error));
 		console.error('');
-		process.exit(1);
+		process.exit(1); // eslint-disable-line no-process-exit
 	}
 }

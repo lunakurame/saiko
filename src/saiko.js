@@ -22,7 +22,7 @@ export default class Saiko {
 		this.logger.debug('Saiko#loadData', 'Loading data...');
 
 		const promises = [];
-		const botPromise = loader.loadJSON(this.data.path + 'bot.json');
+		const botPromise = loader.loadJSON(`${this.data.path}bot.json`);
 
 		promises.push(botPromise);
 
@@ -33,7 +33,7 @@ export default class Saiko {
 			fallbackProperties
 				.filter(property => botData[property] === undefined)
 				.forEach(property => {
-					const value = process.env[`npm_package_${property}`];
+					const value = process.env[`npm_package_${property}`]; // eslint-disable-line no-process-env
 
 					this.logger.warn('Saiko#loadData', `Undefined property: ${property}, using the default value '${value}' [bot.json]`);
 					botData[property] = value;
@@ -44,7 +44,7 @@ export default class Saiko {
 				.map(property => this.logger.panic('Saiko#loadData', `Undefined required property: ${property} [bot.json]`));
 
 			this.data.bot = botData;
-		}).catch(error => {
+		}).catch(() => {
 			this.logger.error('Saiko#loadData', 'Cannot load bot data');
 		});
 
@@ -55,7 +55,7 @@ export default class Saiko {
 			}).catch(error => {
 				this.logger.error('Saiko#loadData', 'Cannot load data');
 				reject(error);
-			})
+			});
 		});
 	}
 
@@ -77,7 +77,9 @@ export default class Saiko {
 						this.logger.debug('Saiko#loadPlugins', `Loading plugin '${pluginName}'...`);
 
 						try {
-							plugins.push(new (require(fullFileName).default)(this));
+							const PluginClass = require(fullFileName).default; // eslint-disable-line global-require
+
+							plugins.push(new PluginClass(this));
 						} catch (error) {
 							this.logger.error('Saiko#loadPlugins', `Cannot load plugin '${pluginName}'`);
 							reject(error);
@@ -124,7 +126,7 @@ export default class Saiko {
 			}).catch(error => {
 				this.logger.error('Saiko#login', 'Cannot log in');
 				reject(error);
-			})
+			});
 		});
 	}
 }

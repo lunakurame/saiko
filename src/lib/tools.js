@@ -2,7 +2,7 @@
  * @param {string} text - text, to which the slash will be added
  * @returns {string} - text with a trailing slash */
 export function addTrailingSlash(text) {
-	return text + (text.endsWith('/') ? '' : '/');
+	return text.endsWith('/') ? text : `${text}/`;
 }
 
 /** Capitalizes first character of a string.
@@ -32,10 +32,10 @@ export function centerConsoleLine(text) {
 export function parseCommandParameters(text) {
 	return text
 		.match(/[^"\s]+|"([^\\"]|\\.)+"/g)
-		.map(param => param.startsWith('"') && param.endsWith('"')?
+		.map(param => param.startsWith('"') && param.endsWith('"') ?
 			param
 				.slice(1, -1)
-				.replace(/[\\]+/g, backslashes => backslashes.slice(1)):
+				.replace(/[\\]+/g, backslashes => backslashes.slice(1)) :
 			param
 		);
 }
