@@ -18,18 +18,18 @@ export function loadJSON(fileName) {
  * @param {string} fileName - the JSON file's name
  * @param {object} data - the saved object
  * @param {function} [serialize] - a function used to serialize data before saving
- * @returns {Promise<undefined|Error>} - an empty promise */
+ * @returns {Promise<string|Error>} - a promise to the serialized data */
 export function saveJSON(fileName, data, serialize) {
 	return new Promise((resolve, reject) => {
 		const serializedData = serialize ?
 			serialize(data) :
-			JSON.stringify(data, null, '\t');
+			`${JSON.stringify(data, null, '\t')}\n`;
 
 		fs.writeFile(fileName, serializedData, error => {
 			if (error)
 				return reject(error);
 
-			return resolve();
+			return resolve(serializedData);
 		});
 	});
 }

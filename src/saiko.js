@@ -44,7 +44,7 @@ export default class Saiko {
 	}
 
 	/** Loads all data stored in JSON files.
-	 * @returns {Promise<array|Error>} - a promise to an array with all the objects loaded from JSON files */
+	 * @returns {Promise<array|Error>} - a promise to an array of the objects loaded from JSON files */
 	loadData() {
 		this.logger.debug('Saiko#loadData', 'Loading data...');
 
@@ -87,6 +87,31 @@ export default class Saiko {
 				resolve(data);
 			}).catch(error => {
 				this.logger.error('Saiko#loadData', 'Cannot load data');
+				reject(error);
+			});
+		});
+	}
+
+	/** Saves all data to JSON files.
+	 * @returns {Promise<array|Error>} - a promise to an array of the serialized data saved to JSON files */
+	saveData() {
+		this.logger.debug('Saiko#saveData', 'Saving data...');
+
+		const promises = [];
+		const dataPromise = loader.saveJSON(`${this.dataPath}data.json`, this.data);
+
+		promises.push(dataPromise);
+
+		dataPromise.catch(() => {
+			this.logger.error('Saiko#saveData', 'Cannot save data.json');
+		});
+
+		return new Promise((resolve, reject) => {
+			Promise.all(promises).then(data => {
+				this.logger.debug('Saiko#saveData', 'Data saved');
+				resolve(data);
+			}).catch(error => {
+				this.logger.error('Saiko#saveData', 'Cannot save data');
 				reject(error);
 			});
 		});
