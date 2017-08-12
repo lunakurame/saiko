@@ -8,12 +8,39 @@ export default class Saiko {
 	 * @param {Logger} logger - a Logger object used to log everything
 	 * @returns {Saiko} - a Saiko object */
 	constructor(dataPath, logger) {
-		this.data    = {
-			path: tools.addTrailingSlash(dataPath)
-		};
-		this.plugins = [];
-		this.logger  = logger;
-		this.client  = new Discord.Client();
+		this.dataPath   = tools.addTrailingSlash(dataPath);
+		this.data       = {};
+		this.plugins    = [];
+		this.logger     = logger;
+		this.client     = new Discord.Client();
+		this.libName    = process.env.npm_package_name; // eslint-disable-line no-process-env
+		this.libVersion = process.env.npm_package_version; // eslint-disable-line no-process-env
+	}
+
+	/** Returns bot's name. If it's not specified, returns the library's name instead.
+	 * @returns {string} - bot's name */
+	get name() {
+		return this.data.name || this.libName;
+	}
+
+	/** Sets bot's name.
+	 * @param {string} value - bot's new name
+	 * @returns {void} */
+	set name(value) {
+		this.data.name = value;
+	}
+
+	/** Returns bot's version. If it's not specified, returns the library's version instead.
+	 * @returns {string} - bot's version */
+	get version() {
+		return this.data.version || this.libVersion;
+	}
+
+	/** Sets bot's version.
+	 * @param {string} value - bot's new version
+	 * @returns {void} */
+	set version(value) {
+		this.data.version = value;
 	}
 
 	/** Loads all data stored in JSON files.
@@ -22,30 +49,36 @@ export default class Saiko {
 		this.logger.debug('Saiko#loadData', 'Loading data...');
 
 		const promises = [];
-		const botPromise = loader.loadJSON(`${this.data.path}bot.json`);
+		const dataPromise = loader.loadJSON(`${this.dataPath}data.json`);
 
-		promises.push(botPromise);
+		promises.push(dataPromise);
 
-		botPromise.then(botData => {
-			const fallbackProperties = ['name', 'version'];
+		dataPromise.then(data => {
 			const requiredProperties = ['token'];
-
-			fallbackProperties
-				.filter(property => botData[property] === undefined)
-				.forEach(property => {
-					const value = process.env[`npm_package_${property}`]; // eslint-disable-line no-process-env
-
-					this.logger.warn('Saiko#loadData', `Undefined property: ${property}, using the default value '${value}' [bot.json]`);
-					botData[property] = value;
-				});
+			const arrayProperties    = [];
+			const objectProperties   = ['guilds'];
 
 			requiredProperties
-				.filter(property => botData[property] === undefined)
-				.map(property => this.logger.panic('Saiko#loadData', `Undefined required property: ${property} [bot.json]`));
+				.filter(property => data[property] === undefined)
+				.forEach(property => {
+					this.logger.panic('Saiko#loadData', `Undefined required property: ${property}`);
+				});
 
-			this.data.bot = botData;
+			arrayProperties
+				.forEach(property => {
+					if (!Array.isArray(data[property]))
+						data[property] = [];
+				});
+
+			objectProperties
+				.forEach(property => {
+					if (typeof data[property] !== 'object' || Array.isArray(data[property]))
+						data[property] = {};
+				});
+
+			this.data = data;
 		}).catch(() => {
-			this.logger.error('Saiko#loadData', 'Cannot load bot data');
+			this.logger.error('Saiko#loadData', 'Cannot load data.json');
 		});
 
 		return new Promise((resolve, reject) => {
@@ -107,7 +140,7 @@ export default class Saiko {
 		eventNames.forEach(eventName => {
 			this.client.on(eventName, (...parameters) => {
 				this.plugins.forEach(plugin => {
-					plugin[`on${tools.capitalizeFirstCharacter(eventName)}`](...parameters);
+					plugin[`on${tools.toUpperCaseFirstChar(eventName)}`](...parameters);
 				});
 			});
 		});
@@ -120,7 +153,7 @@ export default class Saiko {
 	login() {
 		this.logger.debug('Saiko#login', 'Logging in...');
 		return new Promise((resolve, reject) => {
-			this.client.login(this.data.bot.token).then(token => {
+			this.client.login(this.data.token).then(token => {
 				this.logger.debug('Saiko#login', 'Logged in');
 				resolve(token);
 			}).catch(error => {

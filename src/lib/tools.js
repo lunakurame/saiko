@@ -8,7 +8,7 @@ export function addTrailingSlash(text) {
 /** Capitalizes first character of a string.
  * @param {string} text - input text
  * @returns {string} - the same text, but with the first character capitalized */
-export function capitalizeFirstCharacter(text) {
+export function toUpperCaseFirstChar(text) {
 	return [...text][0].toUpperCase() +
 	       [...text].slice(1).join('');
 }
