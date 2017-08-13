@@ -87,11 +87,13 @@ export default class Plugin {
 	}
 
 	/** Handles the 'message' event.
+	 * @listens Discord.Client#message
 	 * @param {Discord.Message} message - new message
 	 * @returns {void} */
 	onMessage(message) {} // eslint-disable-line
 
 	/** Handles the 'messageDelete' event.
+	 * @listens Discord.Client#messageDelete
 	 * @param {Discord.Message} message - deleted message
 	 * @returns {void} */
 	onMessageDelete(message) {} // eslint-disable-line
