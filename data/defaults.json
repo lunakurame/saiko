@@ -1,0 +1,20 @@
+{
+	"channels": {
+		"default": {
+			"plugins": {
+				"admin": {
+					"enabled": true
+				}
+			}
+		}
+	},
+	"guilds": {
+		"default": {
+			"plugins": {
+				"admin": {
+					"enabled": true
+				}
+			}
+		}
+	}
+}

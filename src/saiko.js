@@ -1,3 +1,4 @@
+import './extension/Object.deepAssign.js';
 import Discord from 'discord.js';
 import * as loader from './lib/loader.js';
 import * as tools from './lib/tools.js';
@@ -9,6 +10,7 @@ export default class Saiko {
 	 * @returns {Saiko} - a Saiko object */
 	constructor(dataPath, logger) {
 		this.dataPath   = tools.addTrailingSlash(dataPath);
+		this.defaults   = {};
 		this.data       = {};
 		this.plugins    = [];
 		this.logger     = logger;
@@ -49,14 +51,22 @@ export default class Saiko {
 		this.logger.debug('Saiko#loadData', 'Loading data...');
 
 		const promises = [];
-		const dataPromise = loader.loadJSON(`${this.dataPath}data.json`);
+		const defaultsPromise = loader.loadJSON(`${this.dataPath}defaults.json`);
+		const dataPromise     = loader.loadJSON(`${this.dataPath}data.json`);
 
+		promises.push(defaultsPromise);
 		promises.push(dataPromise);
+
+		defaultsPromise.then(defaults => {
+			this.defaults = defaults;
+		}).catch(() => {
+			this.logger.error('Saiko#loadData', 'Cannot load defaults.json');
+		});
 
 		dataPromise.then(data => {
 			const requiredProperties = ['token'];
 			const arrayProperties    = [];
-			const objectProperties   = ['guilds'];
+			const objectProperties   = ['channels', 'guilds'];
 
 			requiredProperties
 				.filter(property => data[property] === undefined)
@@ -117,6 +127,34 @@ export default class Saiko {
 		});
 	}
 
+	/** Returns a channel's config.
+	 * @param {Discord.Channel} channel
+	 * @returns {object} - channel's config */
+	getChannelConfig(channel) {
+		const noGuild = channel.type !== 'text';
+
+		return Object.deepAssign({},
+			noGuild || this.defaults.guilds.default,
+			noGuild || this.defaults.guilds[channel.guild.id],
+			           this.defaults.channels.default,
+			           this.defaults.channels[channel.id],
+			noGuild || this.data.guilds.default,
+			noGuild || this.data.guilds[channel.guild.id],
+			           this.data.channels.default,
+			           this.data.channels[channel.id]
+		);
+	}
+
+	/** Returns a plugin's config for a given channel.
+	 * @param {Plugin} plugin
+	 * @param {Discord.Channel} channel - the channel which triggered that function
+	 * @returns {object} - plugin's config */
+	getPluginConfig(plugin, channel) {
+		const channelConfig = this.getChannelConfig(channel);
+
+		return (channelConfig.plugins || {})[plugin.name] || {};
+	}
+
 	/** Loads all plugins from plug/*.js.
 	 * @returns {Promise<array|Error>} - a promise to an array of loaded plugins */
 	loadPlugins() {
@@ -164,13 +202,26 @@ export default class Saiko {
 
 		eventNames.forEach(eventName => {
 			this.client.on(eventName, (...parameters) => {
+				const channel = parameters[0].channel;
+
 				this.plugins.forEach(plugin => {
-					plugin[`on${tools.toUpperCaseFirstChar(eventName)}`](...parameters);
+					if (this.isPluginEnabled(plugin, channel))
+						plugin[`on${tools.toUpperCaseFirstChar(eventName)}`](...parameters);
 				});
 			});
 		});
 
 		this.logger.debug('Saiko#enablePlugins', 'Events binded to plugins');
+	}
+
+	/** Checks if a plugin is enabled on a given channel.
+	 * @param {Plugin} plugin
+	 * @param {Discord.Channel} channel
+	 * @returns {boolean} - true if the plugin is enabled, false otherwise */
+	isPluginEnabled(plugin, channel) {
+		const pluginConfig = this.getPluginConfig(plugin, channel);
+
+		return pluginConfig.enabled === true;
 	}
 
 	/** Logs in using the token loaded from the bot's data file.
