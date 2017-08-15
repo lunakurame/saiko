@@ -24,6 +24,18 @@ export function centerConsoleLine(text) {
 	       ' '.repeat(Math.ceil(paddingWidth / 2));
 }
 
+/** Returns a unicode character described by the name.
+ * @param {string} name - emoji name
+ * @returns {string} - a unicode character */
+export function getEmoji(name) {
+	const characters = {
+		'check mark': '✅',
+		'cross mark': '❌'
+	};
+
+	return characters[name];
+}
+
 /** Converts a string of command parameters to an array. Parameters are expected
  *  to be separated by any number of whitespace characters. Double quotes are
  *  supported, as well as escaping them with a backslash.
