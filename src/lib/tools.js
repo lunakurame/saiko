@@ -5,6 +5,13 @@ export function addTrailingSlash(text) {
 	return text.endsWith('/') ? text : `${text}/`;
 }
 
+/** Clone a value by converting it to JSON and back to whatever type it was before.
+ * @param {*} value - a value to be cloned
+ * @return {*} - cloned value */
+export function cloneJSON(value) {
+	return JSON.parse(JSON.stringify(value));
+}
+
 /** Capitalizes first character of a string.
  * @param {string} text - input text
  * @returns {string} - the same text, but with the first character capitalized */
@@ -14,7 +21,7 @@ export function toUpperCaseFirstChar(text) {
 }
 
 /** Inserts spaces before and after text to center it on the screen.
- *  The lenght of the resulting text matches the width of the screen.
+ *  The length of the resulting text matches the width of the screen.
  * @param {string} text - text to be centered
  * @returns {string} - centered text */
 export function centerConsoleLine(text) {
@@ -34,6 +41,21 @@ export function getEmoji(name) {
 	};
 
 	return characters[name];
+}
+
+/** Recursively removes properties which value is an empty object.
+ * @param {object} object - the input object
+ * @returns {object} - the same object after removing empty objects */
+export function removeEmptyObjects(object) {
+	for (const key in object)
+		if (typeof object[key] === 'object') {
+			removeEmptyObjects(object[key]);
+
+			if (Object.keys(object[key]).length === 0)
+				delete object[key];
+		}
+
+	return object;
 }
 
 /** Converts a string of command parameters to an array. Parameters are expected

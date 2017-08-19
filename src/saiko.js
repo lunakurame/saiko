@@ -108,7 +108,8 @@ export default class Saiko {
 		this.logger.debug('Saiko#saveData', 'Saving data...');
 
 		const promises = [];
-		const dataPromise = loader.saveJSON(`${this.dataPath}data.json`, this.data);
+		const minimizedData = tools.removeEmptyObjects(tools.cloneJSON(this.data));
+		const dataPromise = loader.saveJSON(`${this.dataPath}data.json`, minimizedData);
 
 		promises.push(dataPromise);
 
@@ -145,14 +146,30 @@ export default class Saiko {
 		);
 	}
 
-	/** Returns a plugin's config for a given channel.
-	 * @param {Plugin} plugin
-	 * @param {Discord.Channel} channel - the channel which triggered that function
-	 * @returns {object} - plugin's config */
-	getPluginConfig(plugin, channel) {
-		const channelConfig = this.getChannelConfig(channel);
+	/** Returns a guild's config.
+	 * @param {Discord.Guild} guild
+	 * @returns {object|boolean} - guild's config */
+	getGuildConfig(guild) {
+		return Object.deepAssign({},
+			this.defaults.guilds.default,
+			this.defaults.guilds[guild.id],
+			this.data.guilds.default,
+			this.data.guilds[guild.id]
+		);
+	}
 
-		return (channelConfig.plugins || {})[plugin.name] || {};
+	/** Returns a plugin's config for a given channel or a guild.
+	 * @param {Plugin} plugin
+	 * @param {Discord.Channel|Discord.Guild} place - the channel or guild which triggered that function
+	 * @returns {object} - plugin's config */
+	getPluginConfig(plugin, place) {
+		const placeType =
+			place instanceof Discord.Guild   ? 'guild'   :
+			place instanceof Discord.Channel ? 'channel' : null;
+
+		const placeConfig = this[`get${tools.toUpperCaseFirstChar(placeType)}Config`](place);
+
+		return (placeConfig.plugins || {})[plugin.name] || {};
 	}
 
 	/** Loads all plugins from plug/*.js.
@@ -214,12 +231,12 @@ export default class Saiko {
 		this.logger.debug('Saiko#enablePlugins', 'Events binded to plugins');
 	}
 
-	/** Checks if a plugin is enabled on a given channel.
+	/** Checks if a plugin is enabled on a given channel or a guild.
 	 * @param {Plugin} plugin
-	 * @param {Discord.Channel} channel
+	 * @param {Discord.Channel|Discord.Guild} place - the channel or guild which triggered that function
 	 * @returns {boolean} - true if the plugin is enabled, false otherwise */
-	isPluginEnabled(plugin, channel) {
-		const pluginConfig = this.getPluginConfig(plugin, channel);
+	isPluginEnabled(plugin, place) {
+		const pluginConfig = this.getPluginConfig(plugin, place);
 
 		return pluginConfig.enabled === true;
 	}
