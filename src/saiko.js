@@ -3,6 +3,7 @@ import Discord from 'discord.js';
 import * as loader from './lib/loader.js';
 import * as tools from './lib/tools.js';
 
+/** Saiko's main class. */
 export default class Saiko {
 	/** Creates a new Saiko object.
 	 * @param {string} dataPath - path to the data folder
@@ -219,7 +220,7 @@ export default class Saiko {
 
 		eventNames.forEach(eventName => {
 			this.client.on(eventName, (...parameters) => {
-				const channel = parameters[0].channel;
+				const [{channel}] = parameters;
 
 				this.plugins.forEach(plugin => {
 					if (this.isPluginEnabled(plugin, channel))

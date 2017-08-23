@@ -3,6 +3,7 @@ import Discord from 'discord.js';
 import Plugin from '../plugin.js';
 import * as tools from '../lib/tools.js';
 
+/** A plugin to manage other plugins. */
 export default class AdminPlugin extends Plugin {
 	/** Creates a new AdminPlugin object.
 	 * @param {Saiko} saiko - a Saiko object, which is gonna use that plugin
@@ -16,18 +17,16 @@ export default class AdminPlugin extends Plugin {
 			{
 				trigger: 'plugins',
 				action: (message, ...params) => {
-					// user input
-					const action       = params[1];
+					const [, action]   = params;
 					const plugin       = this.saiko.plugins.find(plugin => plugin.name === params[2]);
 					const guildMode    = params[3] === 'guild' && message.channel.type === 'text';
-
-					// data
 					const place        = guildMode ? message.channel.guild : message.channel;
+					const config       = this.saiko.data[guildMode ? 'guilds' : 'channels'];
 
-					if (!this.saiko.data[guildMode ? 'guilds' : 'channels'][place.id])
-						this.saiko.data[guildMode ? 'guilds' : 'channels'][place.id] = {};
+					if (!config[place.id])
+						config[place.id] = {};
 
-					const placeConfig  = this.saiko.data[guildMode ? 'guilds' : 'channels'][place.id];
+					const placeConfig  = config[place.id];
 					const pluginConfig = plugin === undefined ? {} : (placeConfig.plugins || {})[plugin.name] || {};
 
 					// invalid or no paramaters
@@ -44,6 +43,7 @@ export default class AdminPlugin extends Plugin {
 								'\n' +
 								'**Available plugins:**'
 							);
+
 						this.saiko.plugins.forEach(plugin => {
 							const pluginEnabled = this.saiko.isPluginEnabled(plugin, message.channel);
 							embed.addField(

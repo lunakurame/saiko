@@ -1,7 +1,8 @@
 import Discord from 'discord.js';
 import * as tools from './lib/tools.js';
 
-/** @abstract */
+/** Defines an "interface" for plugins. All plugins should extend this class.
+ * @abstract */
 export default class Plugin {
 	/** Creates a new Plugin object.
 	 * @param {Saiko} saiko - a Saiko object, which is gonna use that plugin
@@ -55,7 +56,7 @@ export default class Plugin {
 	 * @param {Discord.Message} message - the message which triggered that command
 	 * @param {PluginCommand} command - the command to run
 	 * @returns {void} */
-	runCommand(message, {action, help}) {
+	static runCommand(message, {action, help}) {
 		const defaultHelp =  {
 			embed: new Discord.RichEmbed()
 				.setColor('#14908d')
@@ -79,7 +80,7 @@ export default class Plugin {
 
 		for (const command of this.commands)
 			if (this.doesMessageTriggerCommand(message, command)) {
-				this.runCommand(message, command);
+				Plugin.runCommand(message, command);
 				return true;
 			}
 

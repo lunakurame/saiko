@@ -1,6 +1,7 @@
 import 'colors';
 import Plugin from '../plugin.js';
 
+/** A plugin to log discord messages. */
 export default class LogPlugin extends Plugin {
 	/** Creates a new LogPlugin object.
 	 * @param {Saiko} saiko - a Saiko object, which is gonna use that plugin
@@ -15,7 +16,7 @@ export default class LogPlugin extends Plugin {
 	/** Returns the message's source in a human-readable format.
 	 * @param {Discord.Message} message - a message to check
 	 * @returns {string} - message's source */
-	formatMessageSource(message) {
+	static formatMessageSource(message) {
 		switch (message.channel.type) {
 		case 'text':
 			return `${message.guild.name}${'#'.cyan}${message.channel.name}`;
@@ -34,7 +35,7 @@ export default class LogPlugin extends Plugin {
 	/** Returns the message's author in a human-readable format.
 	 * @param {Discord.Message} message - a message to check
 	 * @returns {string} - message's author */
-	formatMessageAuthor(message) {
+	static formatMessageAuthor(message) {
 		switch (message.channel.type) {
 		case 'text':
 			return message.member.displayName === message.author.username ?
@@ -56,8 +57,8 @@ export default class LogPlugin extends Plugin {
 	onMessage(message) {
 		this.saiko.logger.log(
 			' New message '.bgGreen.black,
-			this.formatMessageSource(message),
-			this.formatMessageAuthor(message),
+			LogPlugin.formatMessageSource(message),
+			LogPlugin.formatMessageAuthor(message),
 			message.content
 		);
 	}
@@ -69,8 +70,8 @@ export default class LogPlugin extends Plugin {
 	onMessageDelete(message) {
 		this.saiko.logger.log(
 			' Deleted message '.bgRed.white,
-			this.formatMessageSource(message),
-			this.formatMessageAuthor(message),
+			LogPlugin.formatMessageSource(message),
+			LogPlugin.formatMessageAuthor(message),
 			message.content
 		);
 	}

@@ -1,5 +1,6 @@
 import 'colors';
 
+/** Logs all kinds of debug messages, errors, etc. */
 export default class Logger {
 	/** Creates a new Logger object.
 	 * @param {object} options - logging options
@@ -36,15 +37,15 @@ export default class Logger {
 	/** Formats a place name used in the logging functions.
 	 * @param {string} placeName - the place name to be formatted
 	 * @returns {string} - formatted place name */
-	formatPlaceName(placeName) {
+	static formatPlaceName(placeName) {
 		return ` ${placeName} `.bgBlack.white;
 	}
 
 	/** Formats a module name used in the logging functions.
 	 * @param {string} moduleName - the module name to be formatted
 	 * @returns {string} - formatted module name */
-	formatModuleName(moduleName) {
-		return this.formatPlaceName(moduleName).replace(/(#|\.)/g, '$&'.cyan);
+	static formatModuleName(moduleName) {
+		return Logger.formatPlaceName(moduleName).replace(/(#|\.)/g, '$&'.cyan);
 	}
 
 	/** Logs a log message.
@@ -57,7 +58,7 @@ export default class Logger {
 		if (!this.enabled || !this.showLog)
 			return;
 
-		const place = this.formatPlaceName(placeName);
+		const place = Logger.formatPlaceName(placeName);
 
 		console.log(`${status}${place} ${text}`);
 		messages.forEach(message => console.log(message));
@@ -73,7 +74,7 @@ export default class Logger {
 			return;
 
 		const status = ' Debug '.bgCyan.black;
-		const module = this.formatModuleName(moduleName);
+		const module = Logger.formatModuleName(moduleName);
 
 		console.log(`${status}${module} ${text}\n`);
 	}
@@ -87,7 +88,7 @@ export default class Logger {
 			return;
 
 		const status = ' Warning '.bgYellow.black;
-		const module = this.formatModuleName(moduleName);
+		const module = Logger.formatModuleName(moduleName);
 
 		console.warn(`${status}${module} ${text}\n`);
 	}
@@ -102,7 +103,7 @@ export default class Logger {
 			return;
 
 		const status = ' Error '.bgRed.white;
-		const module = this.formatModuleName(moduleName);
+		const module = Logger.formatModuleName(moduleName);
 
 		console.error(`${status}${module} ${text}`);
 		errors.forEach(error => console.error(error));
@@ -119,7 +120,7 @@ export default class Logger {
 			return;
 
 		const status = ' Panic '.bgRed.white;
-		const module = this.formatModuleName(moduleName);
+		const module = Logger.formatModuleName(moduleName);
 
 		console.error(`${status}${module} ${text}`);
 		errors.forEach(error => console.error(error));
