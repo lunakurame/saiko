@@ -37,9 +37,16 @@ export default class AdminPlugin extends Plugin {
 							.setTitle('Plugins')
 							.setDescription(
 								'**Usage:**\n' +
-								'    plugins enable "<plugin name>" [guild]\n' +
-								'    plugins disable "<plugin name>" [guild]\n' +
-								'    plugins default "<plugin name>" [guild]\n' +
+								'    plugins <action> <plugin name> [guild]\n' +
+								'\n' +
+								'Actions:\n' +
+								'- enable - enable plugin,\n' +
+								'- disable - disable plugin,\n' +
+								'- default - reset plugin\'s status to the defaul value.\n' +
+								'\n' +
+								'If the plugin name contains spaces, use quote marks around the name.\n' +
+								'If you add "guild" at the end, the changes will be applied to the guild\'s config ' +
+								'instead of the channel\'s config (that option is ignored for DM and group DM channels).\n' +
 								'\n' +
 								'**Available plugins:**'
 							);
