@@ -109,8 +109,13 @@ export default class Saiko {
 		this.logger.debug('Saiko#saveData', 'Saving data...');
 
 		const promises = [];
-		const minimizedData = tools.removeEmptyObjects(tools.cloneJSON(this.data));
-		const dataPromise = loader.saveJSON(`${this.dataPath}data.json`, minimizedData);
+
+		tools.removeEmptyObjects(this.data);
+		this.updateGuildNames();
+		this.updateChannelNames();
+		tools.removeEmptyObjects(this.data);
+
+		const dataPromise = loader.saveJSON(`${this.dataPath}data.json`, this.data);
 
 		promises.push(dataPromise);
 
@@ -126,6 +131,56 @@ export default class Saiko {
 				this.logger.error('Saiko#saveData', 'Cannot save data');
 				reject(error);
 			});
+		});
+	}
+
+	/** Updates channels' name, type and, if the channel has a parent guild,
+	 *  the guild's id and name in Saiko's data. If that metadata is the only
+	 *  data specified in the channel's config, the config will be removed.
+	 * @returns {void} */
+	updateChannelNames() {
+		Object.keys(this.data.channels).filter(id => id !== '*').forEach(id => {
+			const channel       = this.client.channels.find('id', id);
+			const channelConfig = this.data.channels[id];
+
+			const isConfigEmpty = config => Object.keys(config)
+				.filter(key => !['name', 'type', 'guild'].includes(key))
+				.length === 0;
+
+			if (channel === null || isConfigEmpty(channelConfig)) {
+				this.data.channels[id] = {};
+				return;
+			}
+
+			channelConfig.name = channel.name;
+			channelConfig.type = channel.type;
+
+			if (channel.type === 'text')
+				channelConfig.guild = {
+					id: channel.guild.id,
+					name: channel.guild.name
+				};
+		});
+	}
+
+	/** Updates guilds' name in Saiko's data. If that metadata is the only
+	 *  data specified in the guild's config, the config will be removed.
+	 * @returns {void} */
+	updateGuildNames() {
+		Object.keys(this.data.guilds).filter(id => id !== '*').forEach(id => {
+			const guild       = this.client.guilds.find('id', id);
+			const guildConfig = this.data.guilds[id];
+
+			const isConfigEmpty = config => Object.keys(config)
+				.filter(key => key !== 'name')
+				.length === 0;
+
+			if (guild === null || isConfigEmpty(guildConfig)) {
+				this.data.guilds[id] = {};
+				return;
+			}
+
+			guildConfig.name = guild.name;
 		});
 	}
 
