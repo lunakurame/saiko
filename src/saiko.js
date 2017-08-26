@@ -136,13 +136,13 @@ export default class Saiko {
 		const noGuild = channel.type !== 'text';
 
 		return Object.deepAssign({},
-			noGuild || this.defaults.guilds.default,
+			noGuild || this.defaults.guilds['*'],
 			noGuild || this.defaults.guilds[channel.guild.id],
-			           this.defaults.channels.default,
+			           this.defaults.channels['*'],
 			           this.defaults.channels[channel.id],
-			noGuild || this.data.guilds.default,
+			noGuild || this.data.guilds['*'],
 			noGuild || this.data.guilds[channel.guild.id],
-			           this.data.channels.default,
+			           this.data.channels['*'],
 			           this.data.channels[channel.id]
 		);
 	}
@@ -152,9 +152,9 @@ export default class Saiko {
 	 * @returns {object|boolean} - guild's config */
 	getGuildConfig(guild) {
 		return Object.deepAssign({},
-			this.defaults.guilds.default,
+			this.defaults.guilds['*'],
 			this.defaults.guilds[guild.id],
-			this.data.guilds.default,
+			this.data.guilds['*'],
 			this.data.guilds[guild.id]
 		);
 	}
