@@ -14,6 +14,7 @@ export default class Plugin {
 		/** Plugin's command.
 		 * @typedef PluginCommand
 		 * @type {object}
+		 * @property {boolean} [operator=false]
 		 * @property {string|function|RegExp} trigger
 		 * @property {string|function} action
 		 * @property {string|function} [help] */
@@ -56,7 +57,7 @@ export default class Plugin {
 	 * @param {Discord.Message} message - the message which triggered that command
 	 * @param {PluginCommand} command - the command to run
 	 * @returns {void} */
-	static runCommand(message, {action, help}) {
+	static runCommand(message, {operator, action, help}) {
 		const defaultHelp =  {
 			embed: new Discord.RichEmbed()
 				.setColor('#14908d')
@@ -65,8 +66,10 @@ export default class Plugin {
 		const expandFunction = (thing, ...parameters) =>
 			typeof thing === 'function' ? thing(...parameters) : thing;
 		const commandParams = tools.parseCommandParameters(message.content);
-		const answer = expandFunction(action             , message, ...commandParams) ||
-		               expandFunction(help || defaultHelp, message, ...commandParams);
+		const answer = operator && !Plugin.isOperator(message.member || message.author) ?
+			Plugin.noOperatorPerm() :
+			expandFunction(action             , message, ...commandParams) ||
+			expandFunction(help || defaultHelp, message, ...commandParams);
 
 		message.channel.send(...Array.isArray(answer) ? answer : [answer]);
 	}
@@ -85,6 +88,35 @@ export default class Plugin {
 			}
 
 		return false;
+	}
+
+	/** Checks if a user has operator permissions.
+	 * @param {Discord.GuildMember|Discord.User} user
+	 * @returns {boolean} - true if the user has the Administrator perm or
+	 *  if the user isn't a guild member */
+	static isOperator(user) {
+		if (user instanceof Discord.User)
+			return true;
+
+		if (user instanceof Discord.GuildMember &&
+		    user.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR))
+			return true;
+
+		return false;
+	}
+
+	/** Returns a message saying that a command requires operator permissions.
+	 * @returns {object} - the message */
+	static noOperatorPerm() {
+		const embed = new Discord.RichEmbed()
+			.setColor('#14908d')
+			.setTitle('Permission denied')
+			.setDescription(
+				'That command requires operator permissions. ' +
+				'Use the `operator` command to see who has them.'
+			);
+
+		return {embed};
 	}
 
 	/** Handles the 'message' event.

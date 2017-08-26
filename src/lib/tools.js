@@ -37,7 +37,9 @@ export function centerConsoleLine(text) {
 export function getEmoji(name) {
 	const characters = {
 		'check mark': '✅',
-		'cross mark': '❌'
+		'cross mark': '❌',
+		human: '👱',
+		bot: '🤖'
 	};
 
 	return characters[name];
