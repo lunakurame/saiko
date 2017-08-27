@@ -57,7 +57,7 @@ export default class Plugin {
 	 * @param {Discord.Message} message - the message which triggered that command
 	 * @param {PluginCommand} command - the command to run
 	 * @returns {void} */
-	static runCommand(message, {operator, action, help}) {
+	runCommand(message, {operator, action, help}) {
 		const defaultHelp =  {
 			embed: new Discord.RichEmbed()
 				.setColor('#14908d')
@@ -65,7 +65,10 @@ export default class Plugin {
 		};
 		const expandFunction = (thing, ...parameters) =>
 			typeof thing === 'function' ? thing(...parameters) : thing;
-		const commandParams = tools.parseCommandParameters(message.content);
+		const contentWithoutPrefix = message.content.startsWith(this.prefix) ?
+			message.content.slice(this.prefix.length) :
+			message.content;
+		const commandParams = tools.parseCommandParameters(contentWithoutPrefix);
 		const answer = operator && !Plugin.isOperator(message.member || message.author) ?
 			Plugin.noOperatorPerm() :
 			expandFunction(action             , message, ...commandParams) ||
@@ -83,7 +86,7 @@ export default class Plugin {
 
 		for (const command of this.commands)
 			if (this.doesMessageTriggerCommand(message, command)) {
-				Plugin.runCommand(message, command);
+				this.runCommand(message, command);
 				return true;
 			}
 
