@@ -1,5 +1,4 @@
 import '../extension/Object.deepAssign.js';
-import Discord from 'discord.js';
 import Plugin from '../plugin.js';
 import * as tools from '../lib/tools.js';
 
@@ -16,39 +15,27 @@ export default class AdminPlugin extends Plugin {
 		this.commands = [
 			{
 				trigger: 'operators',
-				action: message => {
-					if (message.channel.type !== 'text') {
-						const embed = new Discord.RichEmbed()
-							.setColor('#14908d')
-							.setTitle('Operator')
-							.setDescription('Operator permissions apply to guild channels only.');
-
-						return {embed};
-					}
-
-					const embed = new Discord.RichEmbed()
-						.setColor('#14908d')
-						.setTitle('Operator')
-						.setDescription(
+				action: message => message.channel.type === 'text' ?
+					this.getEmbed({
+						title: 'Operator',
+						description:
 							'**Usage:**\n' +
 							'Operators can change the bot config. Currently there is ' +
 							'no way to add operators other than granting them a role with ' +
 							'the `Administrator` permission.\n' +
 							'\n' +
-							'**Operators:**'
-						);
-
-					Array.from(message.guild.members.values())
-						.filter(member => Plugin.isOperator(member))
-						.forEach(member => {
-							embed.addField(
-								`${tools.getEmoji(member.user.bot ? 'bot' : 'human')} ${member.nickname || member.user.username}`,
-								`${member.user.username}#${member.user.discriminator}`
-							);
-						});
-
-					return {embed};
-				}
+							'**Operators:**',
+						fields: Array.from(message.guild.members.values())
+							.filter(member => Plugin.isOperator(member))
+							.map(member => ({
+								name: `${tools.getEmoji(member.user.bot ? 'bot' : 'human')} ${member.nickname || member.user.username}`,
+								value: `${member.user.username}#${member.user.discriminator}`
+							}))
+					}) :
+					this.getEmbed({
+						title: 'Operator',
+						description: 'Operator permissions apply to guild channels only.'
+					})
 			},
 			{
 				operator: true,
@@ -68,11 +55,10 @@ export default class AdminPlugin extends Plugin {
 
 					// invalid or no paramaters
 					if (!['enable', 'disable', 'default'].includes(action) ||
-					    plugin === undefined) {
-						const embed = new Discord.RichEmbed()
-							.setColor('#14908d')
-							.setTitle('Plugins')
-							.setDescription(
+					    plugin === undefined)
+						return this.getEmbed({
+							title: 'Plugins',
+							description:
 								'**Usage:**\n' +
 								'    plugins <action> <plugin name> [guild]\n' +
 								'\n' +
@@ -85,30 +71,23 @@ export default class AdminPlugin extends Plugin {
 								'If you add "guild" at the end, the changes will be applied to the guild\'s config ' +
 								'instead of the channel\'s config (that option is ignored for DM and group DM channels).\n' +
 								'\n' +
-								'**Available plugins:**'
-							);
-
-						this.saiko.plugins.forEach(plugin => {
-							const pluginEnabled = this.saiko.isPluginEnabled(plugin, message.channel);
-							embed.addField(
-								`${tools.getEmoji(pluginEnabled ? 'check mark' : 'cross mark')} ${plugin.name}`,
-								plugin.description
-							);
+								'**Available plugins:**',
+							fields: this.saiko.plugins.map(plugin => {
+								const pluginEnabled = this.saiko.isPluginEnabled(plugin, message.channel);
+								return {
+									name: `${tools.getEmoji(pluginEnabled ? 'check mark' : 'cross mark')} ${plugin.name}`,
+									value: plugin.description
+								};
+							})
 						});
-
-						return {embed};
-					}
 
 					// the state is already set to what the user wants
 					if ((action === 'enable'  && pluginConfig.enabled === true) ||
-					    (action === 'disable' && pluginConfig.enabled === false)) {
-						const embed = new Discord.RichEmbed()
-							.setColor('#14908d')
-							.setTitle('Plugins')
-							.setDescription(`Plugin ${plugin.name} already is ${action}d on this ${guildMode ? 'guild' : 'channel'}.`);
-
-						return {embed};
-					}
+					    (action === 'disable' && pluginConfig.enabled === false))
+						return this.getEmbed({
+							title: 'Plugins',
+							description: `Plugin ${plugin.name} already is ${action}d on this ${guildMode ? 'guild' : 'channel'}.`
+						});
 
 					// change config
 					Object.deepAssign(placeConfig, {
@@ -129,12 +108,10 @@ export default class AdminPlugin extends Plugin {
 						action === 'enable'  ? 'enabled' :
 						action === 'disable' ? 'disabled' :
 						action === 'default' ? 'reset to default state' : undefined;
-					const embed = new Discord.RichEmbed()
-						.setColor('#14908d')
-						.setTitle('Plugins')
-						.setDescription(`Plugin ${plugin.name} ${actionDescription} on this ${guildMode ? 'guild' : 'channel'}.`);
-
-					return {embed};
+					return this.getEmbed({
+						title: 'Plugins',
+						description: `Plugin ${plugin.name} ${actionDescription} on this ${guildMode ? 'guild' : 'channel'}.`
+					});
 				}
 			}
 		];

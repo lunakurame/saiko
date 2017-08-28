@@ -27,6 +27,8 @@ export default class Plugin {
 		this.description = `This plugin doesn't have a description.`;
 		/** @type {string} - plugin's prefix */
 		this.prefix      = '`';
+		/** @type {string} - plugin's color used for RichEmbeds */
+		this.color       = '#14908d';
 		/** @type {array<PluginCommand>} - plugin's commands */
 		this.commands    = [];
 	}
@@ -58,11 +60,9 @@ export default class Plugin {
 	 * @param {PluginCommand} command - the command to run
 	 * @returns {void} */
 	runCommand(message, {operator, action, help}) {
-		const defaultHelp =  {
-			embed: new Discord.RichEmbed()
-				.setColor('#14908d')
-				.setTitle(`This command doesn't have a description.`)
-		};
+		const defaultHelp = this.getEmbed({
+			title: `This command doesn't have a description.`
+		});
 		const expandFunction = (thing, ...parameters) =>
 			typeof thing === 'function' ? thing(...parameters) : thing;
 		const contentWithoutPrefix = message.content.startsWith(this.prefix) ?
@@ -70,7 +70,7 @@ export default class Plugin {
 			message.content;
 		const commandParams = tools.parseCommandParameters(contentWithoutPrefix);
 		const answer = operator && !Plugin.isOperator(message.member || message.author) ?
-			Plugin.noOperatorPerm() :
+			this.noOperatorPerm() :
 			expandFunction(action             , message, ...commandParams) ||
 			expandFunction(help || defaultHelp, message, ...commandParams);
 
@@ -93,6 +93,28 @@ export default class Plugin {
 		return false;
 	}
 
+	/** Creates a new object containing a Discord.RichEmbed object.
+	 * @param {object} options - options for the RichEmbed
+	 * @param {string} [options.color=this.color] - RichEmbed's color
+	 * @param {string} [options.title] - RichEmbed's title
+	 * @param {string} [options.description] - RichEmbed's description
+	 * @param {array} [options.fields] - an array of RichEmbed's fields
+	 * @param {string} options.fields[].name - the field's name (title)
+	 * @param {string} options.fields[].value - the field's value (description)
+	 * @param {boolean} [options.fields[].inline=false] - true if the field should be inlined
+	 * @returns {object} - an object containing a RichEmbed object */
+	getEmbed({color = this.color, title, description, fields}) {
+		const embed = new Discord.RichEmbed()
+			.setColor(color)
+			.setTitle(title)
+			.setDescription(description);
+
+		if (Array.isArray(fields) && fields.length > 0)
+			fields.forEach(field => embed.addField(field.name, field.value, field.inline || false));
+
+		return {embed};
+	}
+
 	/** Checks if a user has operator permissions.
 	 * @param {Discord.GuildMember|Discord.User} user
 	 * @returns {boolean} - true if the user has the Administrator perm or
@@ -110,16 +132,12 @@ export default class Plugin {
 
 	/** Returns a message saying that a command requires operator permissions.
 	 * @returns {object} - the message */
-	static noOperatorPerm() {
-		const embed = new Discord.RichEmbed()
-			.setColor('#14908d')
-			.setTitle('Permission denied')
-			.setDescription(
-				'That command requires operator permissions. ' +
+	noOperatorPerm() {
+		return this.getEmbed({
+			title: 'Permission denied',
+			description: 'That command requires operator permissions. ' +
 				'Use the `operator` command to see who has them.'
-			);
-
-		return {embed};
+		});
 	}
 
 	/** Handles the 'message' event.
