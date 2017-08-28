@@ -14,6 +14,22 @@ export default class AdminPlugin extends Plugin {
 		this.description = `Commands to administrate ${saiko.name}.`;
 		this.commands = [
 			{
+				trigger: 'help',
+				action: () => this.getEmbed({
+					title: 'Help',
+					description: '**Commands:**',
+					fields: this.saiko.plugins
+						.filter(plugin => plugin.commands.length > 0)
+						.map(plugin => ({
+							name: `${plugin.name} (${this.prefix})`,
+							value: plugin.commands
+								.map(command => command.trigger)
+								.filter(trigger => typeof trigger === 'string')
+								.join('\n')
+						}))
+				})
+			},
+			{
 				trigger: 'operators',
 				action: message => message.channel.type === 'text' ?
 					this.getEmbed({
@@ -113,6 +129,13 @@ export default class AdminPlugin extends Plugin {
 						description: `Plugin ${plugin.name} ${actionDescription} on this ${guildMode ? 'guild' : 'channel'}.`
 					});
 				}
+			},
+			{
+				trigger: 'version',
+				action: () => this.getEmbed({
+					title: 'Version',
+					description: `${this.saiko.name} ${this.saiko.version}`
+				})
 			}
 		];
 	}
