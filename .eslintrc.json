@@ -14,6 +14,7 @@
 		"class-methods-use-this": ["warn"],
 		"comma-spacing": ["off"],
 		"curly": ["error", "multi", "consistent"],
+		"default-case": ["off"],
 		"dot-location": ["error", "property"],
 		"func-name-matching": ["off"],
 		"func-style": ["error", "declaration", {
@@ -37,6 +38,7 @@
 		"max-statements" : ["warn", 30],
 		"multiline-ternary": ["off"],
 		"newline-per-chained-call": ["off"],
+		"no-case-declarations": ["off"],
 		"no-confusing-arrow": ["off"],
 		"no-console": ["off"],
 		"no-continue": ["off"],
