@@ -65,16 +65,21 @@ export default class Plugin {
 		});
 		const expandFunction = (thing, ...parameters) =>
 			typeof thing === 'function' ? thing(...parameters) : thing;
+
 		const contentWithoutPrefix = message.content.startsWith(this.prefix) ?
 			message.content.slice(this.prefix.length) :
 			message.content;
 		const commandParams = tools.parseCommandParameters(contentWithoutPrefix);
+
 		const answer = operator && !Plugin.isOperator(message.member || message.author) ?
 			this.noOperatorPerm() :
 			expandFunction(action             , message, ...commandParams) ||
 			expandFunction(help || defaultHelp, message, ...commandParams);
+		const posts = Array.isArray(answer) ?
+			answer.every(Array.isArray) ? answer : [answer] :
+			[[answer]];
 
-		message.channel.send(...Array.isArray(answer) ? answer : [answer]);
+		posts.forEach(post => message.channel.send(...post));
 	}
 
 	/** Checks if the message triggers any command and runs it.
@@ -96,28 +101,28 @@ export default class Plugin {
 	/** Creates a new object containing a Discord.RichEmbed object.
 	 * @param {object} options - options for the RichEmbed
 	 * @param {string} [options.color=this.color] - RichEmbed's color
-	 * @param {string} [options.title] - RichEmbed's title
-	 * @param {string} [options.description] - RichEmbed's description
 	 * @param {object} [options.author] - RichEmbed's author
 	 * @param {string} [options.author.name] - RichEmbed's author's name
 	 * @param {string} [options.author.icon] - RichEmbed's author's icon URL
 	 * @param {string} [options.author.url] - RichEmbed's author's URL
+	 * @param {string} [options.title] - RichEmbed's title
+	 * @param {string} [options.description] - RichEmbed's description
 	 * @param {array} [options.fields] - an array of RichEmbed's fields
 	 * @param {string} options.fields[].name - the field's name (title)
 	 * @param {string} options.fields[].value - the field's value (description)
 	 * @param {boolean} [options.fields[].inline=false] - true if the field should be inlined
 	 * @returns {object} - an object containing a RichEmbed object */
-	getEmbed({color = this.color, title, description, author, fields}) {
+	getEmbed({color = this.color, author, title, description, fields}) {
 		const embed = new Discord.RichEmbed();
 
 		if (color)
 			embed.setColor(color);
+		if (author)
+			embed.setAuthor(author.name, author.icon, author.URL);
 		if (title)
 			embed.setTitle(title);
 		if (description)
 			embed.setDescription(description);
-		if (author)
-			embed.setAuthor(author.name, author.icon, author.URL);
 
 		if (Array.isArray(fields) && fields.length > 0)
 			fields.forEach(field => embed.addField(field.name, field.value, field.inline || false));

@@ -82,9 +82,9 @@ export function guessUser(place, clue) {
 	const conditions = [
 		name => name === clueLC,
 		name => name.startsWith(`${clueLC} `),
-		name => new RegExp(`${clueLC}[^a-z]`).test(name),
+		name => name.startsWith(clueLC) && /^[^a-z]/.test(name.slice(clueLC.length)),
 		name => name.split(' ').some(word => word === clueLC),
-		name => name.split(' ').some(word => new RegExp(`${clueLC}[^a-z]`).test(word))
+		name => name.split(' ').some(word => word.startsWith(clueLC) && /^[^a-z]/.test(word.slice(clueLC.length)))
 	];
 	const matches = [
 		...conditions.map(condition => findMember(

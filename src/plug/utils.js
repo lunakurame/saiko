@@ -1,5 +1,6 @@
 import Plugin from '../plugin.js';
 import * as discordTools from '../lib/discord-tools.js';
+import * as tools from '../lib/tools.js';
 
 /** A plugin to manage other plugins. */
 export default class UtilsPlugin extends Plugin {
@@ -15,19 +16,30 @@ export default class UtilsPlugin extends Plugin {
 			{
 				trigger: 'user',
 				action: (message, ...params) => {
-					const user = discordTools.getUser(message.channel.guild || message.channel, params[1]);
-
-					return user ?
-						this.getEmbed({
-							author: {
-								name: user.username,
-								icon: user.displayAvatarURL
-							}
-						}) :
-						this.getEmbed({
-							title: 'Find user',
-							description: `Can't find a user "${params[1]}"`
+					if (params.length < 2)
+						return this.getEmbed({
+							title: 'User',
+							description: 'Who do you want me to find?'
 						});
+
+					const [, ...users] = params;
+
+					return users
+						.map(user => discordTools.getUser(message.channel.guild || message.channel, user) || user)
+						.map(user => typeof user === 'string' ?
+							this.getEmbed({
+								title: 'User',
+								description: `Can't find user "${user}".`
+							}) :
+							this.getEmbed({
+								author: {
+									name: user.tag,
+									icon: user.displayAvatarURL
+								},
+								description: `${tools.getEmoji(user.bot ? 'bot' : 'human')} <@!${user.id}>`
+							})
+						)
+						.map(user => [user]);
 				}
 			}
 		];
