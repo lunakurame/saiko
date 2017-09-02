@@ -98,16 +98,26 @@ export default class Plugin {
 	 * @param {string} [options.color=this.color] - RichEmbed's color
 	 * @param {string} [options.title] - RichEmbed's title
 	 * @param {string} [options.description] - RichEmbed's description
+	 * @param {object} [options.author] - RichEmbed's author
+	 * @param {string} [options.author.name] - RichEmbed's author's name
+	 * @param {string} [options.author.icon] - RichEmbed's author's icon URL
+	 * @param {string} [options.author.url] - RichEmbed's author's URL
 	 * @param {array} [options.fields] - an array of RichEmbed's fields
 	 * @param {string} options.fields[].name - the field's name (title)
 	 * @param {string} options.fields[].value - the field's value (description)
 	 * @param {boolean} [options.fields[].inline=false] - true if the field should be inlined
 	 * @returns {object} - an object containing a RichEmbed object */
-	getEmbed({color = this.color, title, description, fields}) {
-		const embed = new Discord.RichEmbed()
-			.setColor(color)
-			.setTitle(title)
-			.setDescription(description);
+	getEmbed({color = this.color, title, description, author, fields}) {
+		const embed = new Discord.RichEmbed();
+
+		if (color)
+			embed.setColor(color);
+		if (title)
+			embed.setTitle(title);
+		if (description)
+			embed.setDescription(description);
+		if (author)
+			embed.setAuthor(author.name, author.icon, author.URL);
 
 		if (Array.isArray(fields) && fields.length > 0)
 			fields.forEach(field => embed.addField(field.name, field.value, field.inline || false));
