@@ -1,3 +1,5 @@
+/** @module plugin */
+
 import Discord from 'discord.js';
 import * as tools from './lib/tools.js';
 
@@ -19,17 +21,17 @@ export default class Plugin {
 		 * @property {string|function} action
 		 * @property {string|function} [help] */
 
-		/** @type {Saiko} - a Saiko object, which is gonna use the plugin */
+		/** @type {Saiko} */
 		this.saiko       = saiko;
-		/** @type {string} - plugin's name */
+		/** @type {string} */
 		this.name        = this.constructor.name;
-		/** @type {string} - plugin's description */
+		/** @type {string} */
 		this.description = `This plugin doesn't have a description.`;
-		/** @type {string} - plugin's prefix */
+		/** @type {string} */
 		this.prefix      = '`';
-		/** @type {string} - plugin's color used for RichEmbeds */
+		/** @type {string} */
 		this.color       = '#14908d';
-		/** @type {array<PluginCommand>} - plugin's commands */
+		/** @type {array<PluginCommand>} */
 		this.commands    = [];
 	}
 

@@ -1,3 +1,6 @@
+/** Logging messages to the system console.
+ * @module lib/logger */
+
 import 'colors';
 
 /** Logs all kinds of debug messages, errors, etc. */

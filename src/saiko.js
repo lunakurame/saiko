@@ -1,3 +1,5 @@
+/** @module saiko */
+
 import './extension/Object.deepAssign.js';
 import Discord from 'discord.js';
 import * as loader from './lib/loader.js';

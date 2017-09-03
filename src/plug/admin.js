@@ -1,3 +1,5 @@
+/** @module plug/admin */
+
 import '../extension/Object.deepAssign.js';
 import Plugin from '../plugin.js';
 import * as tools from '../lib/tools.js';
@@ -57,11 +59,11 @@ export default class AdminPlugin extends Plugin {
 				operator: true,
 				trigger: 'plugins',
 				action: (message, ...params) => {
-					const [, action]   = params;
-					const plugin       = this.saiko.plugins.find(plugin => plugin.name === params[2]);
-					const guildMode    = params[3] === 'guild' && message.channel.type === 'text';
-					const place        = guildMode ? message.channel.guild : message.channel;
-					const config       = this.saiko.data[guildMode ? 'guilds' : 'channels'];
+					const [, action] = params;
+					const plugin     = this.saiko.plugins.find(plugin => plugin.name === params[2]);
+					const guildMode  = params[3] === 'guild' && message.channel.type === 'text';
+					const place      = guildMode ? message.channel.guild : message.channel;
+					const config     = this.saiko.data[guildMode ? 'guilds' : 'channels'];
 
 					if (!config[place.id])
 						config[place.id] = {};

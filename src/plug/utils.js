@@ -1,3 +1,5 @@
+/** @module plug/utils */
+
 import Plugin from '../plugin.js';
 import * as discordTools from '../lib/discord-tools.js';
 import * as tools from '../lib/tools.js';

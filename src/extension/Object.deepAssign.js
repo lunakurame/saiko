@@ -1,3 +1,5 @@
+/** @module extension/ObjectDeepAssign */
+
 /** Works like Object.assign, but recursevely merges objects, so child objects
  *  are merged too instead of replaced (it copies them without modifying them).
  *  This function doesn't conform to the Object.assign specs.

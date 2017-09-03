@@ -1,3 +1,6 @@
+/** Functions to do operations on disk.
+ * @module lib/loader */
+
 import fs from 'fs';
 
 /** Loads a JSON file.

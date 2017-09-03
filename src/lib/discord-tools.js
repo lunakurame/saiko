@@ -1,3 +1,6 @@
+/** Tools using Discord.js.
+ * @module lib/tools-discord */
+
 import Discord from 'discord.js';
 
 /** A place.

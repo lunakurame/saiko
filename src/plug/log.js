@@ -1,3 +1,5 @@
+/** @module plug/log */
+
 import 'colors';
 import Plugin from '../plugin.js';
 
