@@ -100,36 +100,20 @@ export default class Plugin {
 		return false;
 	}
 
-	/** Creates a new object containing a Discord.RichEmbed object.
-	 * @param {object} options - options for the RichEmbed
-	 * @param {string} [options.color=this.color] - RichEmbed's color
-	 * @param {object} [options.author] - RichEmbed's author
-	 * @param {string} [options.author.name] - RichEmbed's author's name
-	 * @param {string} [options.author.icon] - RichEmbed's author's icon URL
-	 * @param {string} [options.author.url] - RichEmbed's author's URL
-	 * @param {string} [options.title] - RichEmbed's title
-	 * @param {string} [options.description] - RichEmbed's description
-	 * @param {array} [options.fields] - an array of RichEmbed's fields
-	 * @param {string} options.fields[].name - the field's name (title)
-	 * @param {string} options.fields[].value - the field's value (description)
-	 * @param {boolean} [options.fields[].inline=false] - true if the field should be inlined
-	 * @returns {object} - an object containing a RichEmbed object */
-	getEmbed({color = this.color, author, title, description, fields}) {
-		const embed = new Discord.RichEmbed();
+	/** Creates a new Discord.RichEmbed object setting the default color.
+	 * @param {object} data - whatever Discord.RichEmbed's constructor accepts,
+	 *  except hex color values are fine too (both #aabbcc and #abc)
+	 * @returns {Discord.RichEmbed} - a RichEmbed object */
+	getEmbed(data) {
+		const color = /^#?[a-fA-F\d]{3}$/.test(data.color) ?
+			[...data.color.slice(-3)].map(nibble => nibble.repeat(2)).join('') :
+			data.color;
+		delete data.color;
+		const embed = new Discord.RichEmbed(data);
 
-		if (color)
-			embed.setColor(color);
-		if (author)
-			embed.setAuthor(author.name, author.icon, author.URL);
-		if (title)
-			embed.setTitle(title);
-		if (description)
-			embed.setDescription(description);
+		embed.setColor(/^#?0{6}$/.test(color) ? '#010101' : color || this.color);
 
-		if (Array.isArray(fields) && fields.length > 0)
-			fields.forEach(field => embed.addField(field.name, field.value, field.inline || false));
-
-		return {embed};
+		return embed;
 	}
 
 	/** Checks if a user has operator permissions.
