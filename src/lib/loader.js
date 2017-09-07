@@ -3,6 +3,49 @@
 
 import fs from 'fs';
 
+/** Creates a directory.
+ * @param {string} path - the path of the new directory
+ * @param {integer} [mode=0o755] - permissions
+ * @returns {Promise<string|Error>} - a promise to the directory path */
+export function createDirectory(path, mode = 0o755) {
+	return new Promise((resolve, reject) => {
+		fs.mkdir(path, mode, error => {
+			if (error)
+				return reject(error);
+
+			return resolve(path);
+		});
+	});
+}
+
+/** Checks if a file exists and is readable (has read permissions).
+ * @param {string} fileName - the file's name
+ * @returns {Promise<string|Error>} - a promise to the file name */
+export function isFileReadable(fileName) {
+	return new Promise((resolve, reject) => {
+		fs.access(fileName, fs.constants.R_OK, error => {
+			if (error)
+				return reject(error);
+
+			return resolve(fileName);
+		});
+	});
+}
+
+/** Checks if a file exists and is writable (has write permissions).
+ * @param {string} fileName - the file's name
+ * @returns {Promise<string|Error>} - a promise to the file name */
+export function isFileWritable(fileName) {
+	return new Promise((resolve, reject) => {
+		fs.access(fileName, fs.constants.W_OK, error => {
+			if (error)
+				return reject(error);
+
+			return resolve(fileName);
+		});
+	});
+}
+
 /** Loads a JSON file.
  * @param {string} fileName - the JSON file's name
  * @returns {Promise<object|Error>} - a promise to the loaded object */

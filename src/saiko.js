@@ -112,10 +112,12 @@ export default class Saiko {
 
 		const promises = [];
 
-		tools.removeEmptyObjects(this.data);
+		tools.removeEmptyObjects(this.data.channels);
+		tools.removeEmptyObjects(this.data.guilds);
 		this.updateGuildNames();
 		this.updateChannelNames();
-		tools.removeEmptyObjects(this.data);
+		tools.removeEmptyObjects(this.data.channels);
+		tools.removeEmptyObjects(this.data.guilds);
 
 		const dataPromise = loader.saveJSON(`${this.dataPath}data.json`, this.data);
 
