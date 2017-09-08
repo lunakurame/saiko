@@ -13,7 +13,6 @@ export default class Saiko {
 	 * @returns {Saiko} - a Saiko object */
 	constructor(dataPath, logger) {
 		this.dataPath   = tools.addTrailingSlash(dataPath);
-		this.defaults   = {};
 		this.data       = {};
 		this.plugins    = [];
 		this.logger     = logger;
@@ -48,54 +47,37 @@ export default class Saiko {
 		this.data.version = value;
 	}
 
-	/** Loads all data stored in JSON files.
-	 * @returns {Promise<array|Error>} - a promise to an array of the objects loaded from JSON files */
+	/** Loads the data.
+	 * @returns {Promise<object|Error>} - a promise to the data object */
 	loadData() {
 		this.logger.debug('Saiko#loadData', 'Loading data...');
 
-		const promises = [];
-		const defaultsPromise = loader.loadJSON(`${this.dataPath}defaults.json`);
-		const dataPromise     = loader.loadJSON(`${this.dataPath}data.json`);
-
-		promises.push(defaultsPromise);
-		promises.push(dataPromise);
-
-		defaultsPromise.then(defaults => {
-			this.defaults = defaults;
-		}).catch(() => {
-			this.logger.error('Saiko#loadData', 'Cannot load defaults.json');
-		});
-
-		dataPromise.then(data => {
-			const requiredProperties = ['token'];
-			const arrayProperties    = [];
-			const objectProperties   = ['channels', 'guilds'];
-
-			requiredProperties
-				.filter(property => data[property] === undefined)
-				.forEach(property => {
-					this.logger.panic('Saiko#loadData', `Undefined required property: ${property}`);
-				});
-
-			arrayProperties
-				.forEach(property => {
-					if (!Array.isArray(data[property]))
-						data[property] = [];
-				});
-
-			objectProperties
-				.forEach(property => {
-					if (typeof data[property] !== 'object' || Array.isArray(data[property]))
-						data[property] = {};
-				});
-
-			this.data = data;
-		}).catch(() => {
-			this.logger.error('Saiko#loadData', 'Cannot load data.json');
-		});
-
 		return new Promise((resolve, reject) => {
-			Promise.all(promises).then(data => {
+			loader.loadJSON(`${this.dataPath}data.json`).then(data => {
+				const requiredProperties = ['token'];
+				const arrayProperties    = [];
+				const objectProperties   = ['defaults', 'guilds', 'channels'];
+
+				requiredProperties
+					.filter(property => data[property] === undefined)
+					.forEach(property => {
+						this.logger.panic('Saiko#loadData', `Undefined required property: ${property}`);
+					});
+
+				arrayProperties
+					.forEach(property => {
+						if (!Array.isArray(data[property]))
+							data[property] = [];
+					});
+
+				objectProperties
+					.forEach(property => {
+						if (typeof data[property] !== 'object' || Array.isArray(data[property]))
+							data[property] = {};
+					});
+
+				this.data = data;
+
 				this.logger.debug('Saiko#loadData', 'Data loaded');
 				resolve(data);
 			}).catch(error => {
@@ -105,36 +87,32 @@ export default class Saiko {
 		});
 	}
 
-	/** Saves all data to JSON files.
-	 * @returns {Promise<array|Error>} - a promise to an array of the serialized data saved to JSON files */
+	/** Saves the data.
+	 * @returns {Promise<object|Error>} - a promise to the serialized data */
 	saveData() {
 		this.logger.debug('Saiko#saveData', 'Saving data...');
 
-		const promises = [];
-
-		tools.removeEmptyObjects(this.data.channels);
-		tools.removeEmptyObjects(this.data.guilds);
-		this.updateGuildNames();
-		this.updateChannelNames();
-		tools.removeEmptyObjects(this.data.channels);
-		tools.removeEmptyObjects(this.data.guilds);
-
-		const dataPromise = loader.saveJSON(`${this.dataPath}data.json`, this.data);
-
-		promises.push(dataPromise);
-
-		dataPromise.catch(() => {
-			this.logger.error('Saiko#saveData', 'Cannot save data.json');
-		});
-
 		return new Promise((resolve, reject) => {
-			Promise.all(promises).then(data => {
+			this.clearData();
+			this.updateGuildNames();
+			this.updateChannelNames();
+
+			loader.saveJSON(`${this.dataPath}data.json`, this.data).then(serializedData => {
 				this.logger.debug('Saiko#saveData', 'Data saved');
-				resolve(data);
+				resolve(serializedData);
 			}).catch(error => {
 				this.logger.error('Saiko#saveData', 'Cannot save data');
 				reject(error);
 			});
+		});
+	}
+
+	/** Clears the data object from empty objects.
+	 * @returns {void} */
+	clearData() {
+		Object.values(this.data).forEach(value => {
+			if (typeof value === 'object' && value !== null)
+				tools.removeEmptyObjects(value);
 		});
 	}
 
@@ -152,7 +130,7 @@ export default class Saiko {
 				.length === 0;
 
 			if (channel === null || isConfigEmpty(channelConfig)) {
-				this.data.channels[id] = {};
+				delete this.data.channels[id];
 				return;
 			}
 
@@ -180,7 +158,7 @@ export default class Saiko {
 				.length === 0;
 
 			if (guild === null || isConfigEmpty(guildConfig)) {
-				this.data.guilds[id] = {};
+				delete this.data.guilds[id];
 				return;
 			}
 
@@ -195,13 +173,8 @@ export default class Saiko {
 		const noGuild = channel.type !== 'text';
 
 		return Object.deepAssign({},
-			noGuild || this.defaults.guilds['*'],
-			noGuild || this.defaults.guilds[channel.guild.id],
-			           this.defaults.channels['*'],
-			           this.defaults.channels[channel.id],
-			noGuild || this.data.guilds['*'],
+			           this.data.defaults,
 			noGuild || this.data.guilds[channel.guild.id],
-			           this.data.channels['*'],
 			           this.data.channels[channel.id]
 		);
 	}
@@ -211,9 +184,7 @@ export default class Saiko {
 	 * @returns {object|boolean} - guild's config */
 	getGuildConfig(guild) {
 		return Object.deepAssign({},
-			this.defaults.guilds['*'],
-			this.defaults.guilds[guild.id],
-			this.data.guilds['*'],
+			this.data.defaults,
 			this.data.guilds[guild.id]
 		);
 	}

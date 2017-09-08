@@ -29,10 +29,7 @@ function loadSaiko() {
 	});
 }
 
-const dataFileAccess     = loader.isFileReadable(`${dataPath}data.json`);
-const defaultsFileAccess = loader.isFileReadable(`${dataPath}defaults.json`);
-
-Promise.all([dataFileAccess, defaultsFileAccess]).then(() => {
+loader.isFileReadable(`${dataPath}data.json`).then(() => {
 	loadSaiko();
 }).catch(() => {
 	const cli = readline.createInterface({
@@ -52,7 +49,7 @@ Promise.all([dataFileAccess, defaultsFileAccess]).then(() => {
 		});
 	});
 
-	const generateData = () => new Promise((resolve, reject) => {
+	new Promise((resolve, reject) => {
 		logger.warn('Index', 'Missing configuration data');
 
 		cli.question(`Looks like the ${dataPath}data.json file is missing. ` +
@@ -60,11 +57,19 @@ Promise.all([dataFileAccess, defaultsFileAccess]).then(() => {
 		             `Do you want to generate it now? [Y/n] `, answer => {
 			if (['', 'y', 'yes', 'yep', 'yeah'].includes(answer.toLowerCase())) {
 				const data = {
+					dataVersion: '0.1.0',
 					name: tools.toUpperCaseFirstChar(process.env.npm_package_name), // eslint-disable-line no-process-env
 					version: process.env.npm_package_version, // eslint-disable-line no-process-env
 					token: '',
-					channels: {},
-					guilds: {}
+					defaults: {
+						plugins: {
+							admin: {
+								enabled: true
+							}
+						}
+					},
+					guilds: {},
+					channels: {}
 				};
 
 				cli.question(`Your bot's name: (${data.name}) `, answer => {
@@ -101,85 +106,10 @@ Promise.all([dataFileAccess, defaultsFileAccess]).then(() => {
 				reject(new Error('Cannot start without the data.json file'));
 			}
 		});
-	});
-
-	const generateDefaults = () => new Promise((resolve, reject) => {
-		logger.warn('Index', 'Missing configuration data');
-
-		cli.question(`Looks like the ${dataPath}defaults.json file is missing.\n` +
-		             `Do you want to generate it now? [Y/n] `, answer => {
-			if (['', 'y', 'yes', 'yep', 'yeah'].includes(answer.toLowerCase())) {
-				const defaults = {
-					channels: {
-						'*': {
-							plugins: {
-								admin: {
-									enabled: true
-								}
-							}
-						}
-					},
-					guilds: {
-						'*': {
-							plugins: {
-								admin: {
-									enabled: true
-								}
-							}
-						}
-					}
-				};
-
-				cli.write('\nSaving defaults...\n');
-
-				createDataDir().then(() => {
-					loader.saveJSON(`${dataPath}defaults.json`, defaults).then(() => {
-						cli.write('Defaults saved.\n\n');
-						resolve(true);
-					}).catch(() => {
-						cli.write('\n');
-						reject(new Error('Cannot save the defaults.json file'));
-					});
-				}).catch(error => {
-					cli.write('\n');
-					reject(error);
-				});
-			} else {
-				cli.write('Aborting\n\n');
-				reject(new Error('Cannot start without the defaults.json file'));
-			}
-		});
-	});
-
-	dataFileAccess.then(() => {
-		// data is ok, defaults must be missing
-		generateDefaults().then(() => {
-			// defaults generated
-			cli.close();
-			loadSaiko();
-		}).catch(error => {
-			logger.panic('Index', error.message);
-		});
-	}).catch(() => {
-		// data is missing
-		generateData().then(() => {
-			// data generated, are defaults missing too?
-			defaultsFileAccess.then(() => {
-				// defaults ok
-				cli.close();
-				loadSaiko();
-			}).catch(() => {
-				// defaults are missing
-				generateDefaults().then(() => {
-					// defaults generated
-					cli.close();
-					loadSaiko();
-				}).catch(error => {
-					logger.panic('Index', error.message);
-				});
-			});
-		}).catch(error => {
-			logger.panic('Index', error.message);
-		});
+	}).then(() => {
+		cli.close();
+		loadSaiko();
+	}).catch(error => {
+		logger.panic('Index', error.message);
 	});
 });
