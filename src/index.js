@@ -97,7 +97,7 @@ async function main() {
 
 		try {
 			await saiko.loadPlugins();
-			await saiko.enablePlugins();
+			saiko.enablePlugins();
 
 			try {
 				await saiko.login();
