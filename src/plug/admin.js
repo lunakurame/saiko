@@ -92,6 +92,7 @@ export default class AdminPlugin extends Plugin {
 								'**Available plugins:**',
 							fields: this.saiko.plugins.map(plugin => {
 								const pluginEnabled = this.saiko.isPluginEnabled(plugin, message.channel);
+
 								return {
 									name: `${tools.getEmoji(pluginEnabled ? 'check mark' : 'cross mark')} ${plugin.name}`,
 									value: plugin.description
@@ -111,7 +112,7 @@ export default class AdminPlugin extends Plugin {
 					Object.deepAssign(placeConfig, {
 						plugins: {
 							[plugin.name]: {
-								enabled: action === 'enable'  ? true :
+								enabled: action === 'enable'  ? true  :
 								         action === 'disable' ? false : undefined
 							}
 						}
@@ -123,9 +124,10 @@ export default class AdminPlugin extends Plugin {
 					this.saiko.saveData();
 
 					const actionDescription =
-						action === 'enable'  ? 'enabled' :
-						action === 'disable' ? 'disabled' :
+						action === 'enable'  ? 'enabled'                :
+						action === 'disable' ? 'disabled'               :
 						action === 'default' ? 'reset to default state' : undefined;
+
 					return this.getEmbed({
 						title: 'Plugins',
 						description: `Plugin ${plugin.name} ${actionDescription} on this ${guildMode ? 'guild' : 'channel'}.`

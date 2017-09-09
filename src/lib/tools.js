@@ -52,7 +52,7 @@ export function getEmoji(name) {
  * @param {object} object - the input object
  * @returns {object} - the same object after removing empty objects */
 export function removeEmptyObjects(object) {
-	for (const key in object)
+	for (const key of Object.keys(object))
 		if (typeof object[key] === 'object' && object[key] !== null) {
 			removeEmptyObjects(object[key]);
 

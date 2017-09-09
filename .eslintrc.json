@@ -5,6 +5,7 @@
 	},
 	"extends": "eslint:all",
 	"parserOptions": {
+		"ecmaVersion": 8,
 		"sourceType": "module"
 	},
 	"rules": {
@@ -36,16 +37,19 @@
 			"skipComments": true
 		}],
 		"max-params": ["warn", 4],
-		"max-statements" : ["warn", 30],
+		"max-statements" : ["warn", 40],
 		"multiline-ternary": ["off"],
 		"newline-per-chained-call": ["off"],
+		"new-parens": ["off"],
 		"no-case-declarations": ["off"],
+		"no-catch-shadow": ["off"],
 		"no-confusing-arrow": ["off"],
 		"no-console": ["off"],
 		"no-continue": ["off"],
 		"no-extra-parens": ["error", "all", {
 			"nestedBinaryExpressions": false
 		}],
+		"no-inner-declarations": ["off"],
 		"no-magic-numbers": ["off"],
 		"no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
 		"no-multi-spaces": ["off"],

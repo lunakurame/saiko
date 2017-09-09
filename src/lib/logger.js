@@ -64,7 +64,8 @@ export default class Logger {
 		const place = Logger.formatPlaceName(placeName);
 
 		console.log(`${status}${place} ${text}`);
-		messages.forEach(message => console.log(message));
+		for (const message of messages)
+			console.log(message);
 		console.log('');
 	}
 
@@ -109,7 +110,8 @@ export default class Logger {
 		const module = Logger.formatModuleName(moduleName);
 
 		console.error(`${status}${module} ${text}`);
-		errors.forEach(error => console.error(error));
+		for (const error of errors)
+			console.error(error);
 		console.error('');
 	}
 
@@ -126,7 +128,8 @@ export default class Logger {
 		const module = Logger.formatModuleName(moduleName);
 
 		console.error(`${status}${module} ${text}`);
-		errors.forEach(error => console.error(error));
+		for (const error of errors)
+			console.error(error);
 		console.error('');
 		process.exit(1); // eslint-disable-line no-process-exit
 	}

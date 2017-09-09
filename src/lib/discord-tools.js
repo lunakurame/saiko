@@ -31,9 +31,11 @@ export function getMemberCollection(place) {
 	case 'guild':
 		return place.members;
 	case 'dm':
-		const collection = new Discord.Collection();
+		const collection = new Discord.Collection;
+
 		collection.set(place.client.user.id, place.client.user);
 		collection.set(place.recipient.id, place.recipient);
+
 		return collection;
 	case 'group':
 		return place.recipients;
@@ -54,7 +56,7 @@ export function getUserById(place, userID) {
 	if (!collection)
 		return null;
 
-	const user = collection.find('id', userID);
+	const user = collection.get(userID);
 
 	return (
 		user instanceof Discord.User        ? user      :
@@ -81,7 +83,8 @@ export function guessUser(place, clue) {
 			nickname: member.nickname ? member.nickname.toLowerCase() : null,
 			username: (member.username || member.user.username).toLowerCase()
 		}))
-		.values());
+		.values()
+	);
 
 	const clueLC = clue.toLowerCase();
 	const conditions = [
@@ -102,9 +105,9 @@ export function guessUser(place, clue) {
 		))
 	];
 
-	for (const key in matches)
-		if (matches[key].length === 1)
-			return matches[key][0].user || matches[key][0];
+	for (const match of matches)
+		if (match.length === 1)
+			return match[0].user || match[0];
 
 	return null;
 }

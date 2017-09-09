@@ -2,62 +2,50 @@
  * @module lib/loader */
 
 import fs from 'fs';
+import {promisify} from 'util';
 
 /** Creates a directory.
  * @param {string} path - the path of the new directory
  * @param {integer} [mode=0o755] - permissions
  * @returns {Promise<string|Error>} - a promise to the directory path */
-export function createDirectory(path, mode = 0o755) {
-	return new Promise((resolve, reject) => {
-		fs.mkdir(path, mode, error => {
-			if (error)
-				return reject(error);
+export async function createDirectory(path, mode = 0o755) {
+	const mkDir = promisify(fs.mkdir);
 
-			return resolve(path);
-		});
-	});
+	await mkDir(path, mode);
+
+	return path;
 }
 
 /** Checks if a file exists and is readable (has read permissions).
  * @param {string} fileName - the file's name
  * @returns {Promise<string|Error>} - a promise to the file name */
-export function isFileReadable(fileName) {
-	return new Promise((resolve, reject) => {
-		fs.access(fileName, fs.constants.R_OK, error => {
-			if (error)
-				return reject(error);
+export async function isFileReadable(fileName) {
+	const access = promisify(fs.access);
 
-			return resolve(fileName);
-		});
-	});
+	await access(fileName, fs.constants.R_OK);
+
+	return fileName;
 }
 
 /** Checks if a file exists and is writable (has write permissions).
  * @param {string} fileName - the file's name
  * @returns {Promise<string|Error>} - a promise to the file name */
-export function isFileWritable(fileName) {
-	return new Promise((resolve, reject) => {
-		fs.access(fileName, fs.constants.W_OK, error => {
-			if (error)
-				return reject(error);
+export async function isFileWritable(fileName) {
+	const access = promisify(fs.access);
 
-			return resolve(fileName);
-		});
-	});
+	await access(fileName, fs.constants.W_OK);
+
+	return fileName;
 }
 
 /** Loads a JSON file.
  * @param {string} fileName - the JSON file's name
  * @returns {Promise<object|Error>} - a promise to the loaded object */
-export function loadJSON(fileName) {
-	return new Promise((resolve, reject) => {
-		fs.readFile(fileName, (error, data) => {
-			if (error)
-				return reject(error);
+export async function loadJSON(fileName) {
+	const readFile = promisify(fs.readFile);
+	const data = await readFile(fileName);
 
-			return resolve(JSON.parse(data));
-		});
-	});
+	return JSON.parse(data);
 }
 
 /** Saves an object to a JSON file.
@@ -65,31 +53,23 @@ export function loadJSON(fileName) {
  * @param {object} data - the saved object
  * @param {function} [serialize] - a function used to serialize data before saving
  * @returns {Promise<string|Error>} - a promise to the serialized data */
-export function saveJSON(fileName, data, serialize) {
-	return new Promise((resolve, reject) => {
-		const serializedData = serialize ?
-			serialize(data) :
-			`${JSON.stringify(data, null, '\t')}\n`;
+export async function saveJSON(fileName, data, serialize) {
+	const writeFile = promisify(fs.writeFile);
+	const serializedData = serialize ?
+		serialize(data) :
+		`${JSON.stringify(data, null, '\t')}\n`;
 
-		fs.writeFile(fileName, serializedData, error => {
-			if (error)
-				return reject(error);
+	await writeFile(fileName, serializedData);
 
-			return resolve(serializedData);
-		});
-	});
+	return serializedData;
 }
 
 /** Lists all files (including folders) in a directory.
  * @param {string} dirName - path to the listed directory
  * @returns {Promise<array|Error>} - a promise to an array of file names */
-export function listDirectory(dirName) {
-	return new Promise((resolve, reject) => {
-		fs.readdir(dirName, (error, files) => {
-			if (error)
-				return reject(error);
+export async function listDirectory(dirName) {
+	const readDir = promisify(fs.readdir);
+	const files = await readDir(dirName);
 
-			return resolve(files);
-		});
-	});
+	return files;
 }

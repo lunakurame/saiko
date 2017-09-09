@@ -22,17 +22,17 @@ export default class Plugin {
 		 * @property {string|function} [help] */
 
 		/** @type {Saiko} */
-		this.saiko       = saiko;
+		this.saiko = saiko;
 		/** @type {string} */
-		this.name        = this.constructor.name;
+		this.name = this.constructor.name;
 		/** @type {string} */
 		this.description = `This plugin doesn't have a description.`;
 		/** @type {string} */
-		this.prefix      = '`';
+		this.prefix = '`';
 		/** @type {string} */
-		this.color       = '#14908d';
+		this.color = '#14908d';
 		/** @type {array<PluginCommand>} */
-		this.commands    = [];
+		this.commands = [];
 	}
 
 	/** Checks if a user should be ignored.
@@ -81,7 +81,8 @@ export default class Plugin {
 			answer.every(Array.isArray) ? answer : [answer] :
 			[[answer]];
 
-		posts.forEach(post => message.channel.send(...post));
+		for (const post of posts)
+			message.channel.send(...post);
 	}
 
 	/** Checks if the message triggers any command and runs it.
