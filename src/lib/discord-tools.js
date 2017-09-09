@@ -15,6 +15,7 @@ export function getPlaceType(place) {
 		place instanceof Discord.TextChannel    ? 'text'   :
 		place instanceof Discord.DMChannel      ? 'dm'     :
 		place instanceof Discord.GroupDMChannel ? 'group'  :
+		place instanceof Discord.VoiceChannel   ? 'voice'  :
 		place instanceof Discord.Guild          ? 'guild'  :
 		place instanceof Discord.Client         ? 'client' : null
 	);
@@ -26,6 +27,7 @@ export function getPlaceType(place) {
 export function getMemberCollection(place) {
 	switch (getPlaceType(place)) {
 	case 'text':
+	case 'voice':
 	case 'guild':
 		return place.members;
 	case 'dm':
