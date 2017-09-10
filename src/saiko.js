@@ -18,6 +18,7 @@ export default class Saiko {
 		this.dataPath   = tools.addTrailingSlash(dataPath);
 		this.logger     = logger;
 		this.client     = new Discord.Client;
+		this.responses  = new Discord.Collection;
 		this.data       = {};
 		this.plugins    = [];
 	}
@@ -229,16 +230,91 @@ export default class Saiko {
 	enablePlugins() {
 		this.logger.debug('Saiko#enablePlugins', 'Binding events to plugins...');
 
+		const handleEvent = async (eventName, ...parameters) => {
+			const [message] = parameters;
+			const {channel} = message;
+			let response = null;
+
+			for (const plugin of this.plugins)
+				if (this.isPluginEnabled(plugin, channel)) {
+					const pluginResponse = plugin[`on${tools.toUpperCaseFirstChar(eventName)}`](...parameters);
+
+					if (!response && pluginResponse)
+						response = pluginResponse;
+				}
+
+			/* eslint-disable no-await-in-loop */
+			const sentMessages = this.responses.get(message.id) || [];
+
+			// if the original trigger post got removed and Saiko doesn't wanna edit her response,
+			// remove her old response
+			if (eventName === 'messageDelete' && !(response || {}).edits)
+				try {
+					while (sentMessages.length > 0) {
+						await sentMessages[0].delete();
+						sentMessages.shift();
+					}
+				} catch (error) {
+					this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
+				}
+
+			if (response) {
+				// process edits (this might involve editing, deleting and sending new posts)
+				if (response.edits.length > 0)
+					// if the number of edits is greater than the number of already sent posts,
+					// wipe everything and post the edits as new posts coz there is no way to
+					// edit the old ones anyway
+					if (response.edits.length > sentMessages.length) {
+						try {
+							while (sentMessages.length > 0) {
+								await sentMessages[0].delete();
+								sentMessages.shift();
+							}
+						} catch (error) {
+							this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
+						}
+
+						for (const post of response.edits)
+							response.posts.push(post);
+					// remove extra posts if there are any and edit the remaining ones
+					} else {
+						try {
+							while (sentMessages.length > response.edits.length) {
+								await sentMessages[sentMessages.length - 1].delete();
+								sentMessages.pop();
+							}
+						} catch (error) {
+							this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
+						}
+
+						try {
+							for (const [index, post] of response.edits.entries()) {
+								const sentMessage = await sentMessages[index].edit(...post);
+								sentMessages[index] = sentMessage;
+							}
+						} catch (error) {
+							this.logger.error('Saiko#enablePlugins', 'Cannot edit a message', error);
+						}
+					}
+
+				// send posts
+				for (const post of response.posts)
+					try {
+						const sentMessage = await channel.send(...post);
+						sentMessages.push(sentMessage);
+					} catch (error) {
+						this.logger.error('Saiko#enablePlugins', 'Cannot send a message', error);
+					}
+
+				this.responses.set(message.id, sentMessages);
+			}
+			/* eslint-enable no-await-in-loop */
+		};
+
 		const eventNames = ['message', 'messageDelete', 'messageUpdate'];
 
 		for (const eventName of eventNames)
-			this.client.on(eventName, (...parameters) => {
-				const [{channel}] = parameters;
-
-				for (const plugin of this.plugins)
-					if (this.isPluginEnabled(plugin, channel))
-						plugin[`on${tools.toUpperCaseFirstChar(eventName)}`](...parameters);
-			});
+			this.client.on(eventName, (...paramaters) => handleEvent(eventName, ...paramaters));
 
 		this.logger.debug('Saiko#enablePlugins', 'Events binded to plugins');
 	}

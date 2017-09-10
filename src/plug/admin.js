@@ -147,8 +147,17 @@ export default class AdminPlugin extends Plugin {
 	/** Runs matching commands.
 	 * @listens Discord.Client#message
 	 * @param {Discord.Message} message - new message
-	 * @returns {void} */
+	 * @returns {?MessageResponse} - a response to send */
 	onMessage(message) {
-		this.runMatchingCommand(message);
+		return this.runMatchingCommand(message);
+	}
+
+	/** Runs matching commands (edits existing responses).
+	 * @listens Discord.Client#messageUpdate
+	 * @param {Discord.Message} oldMessage - message before the update
+	 * @param {Discord.Message} newMessage - message after the update
+	 * @returns {?MessageResponse} - a response to send */
+	onMessageUpdate(oldMessage, newMessage) {
+		return this.runMatchingCommand(newMessage, true);
 	}
 }
