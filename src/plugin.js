@@ -153,4 +153,11 @@ export default class Plugin {
 	 * @param {Discord.Message} message - deleted message
 	 * @returns {void} */
 	onMessageDelete(message) {} // eslint-disable-line
+
+	/** Handles the 'messageUpdate' event.
+	 * @listens Discord.Client#messageUpdate
+	 * @param {Discord.Message} oldMessage - message before the update
+	 * @param {Discord.Message} newMessage - message after the update
+	 * @returns {void} */
+	onMessageUpdate(oldMessage, newMessage) {} // eslint-disable-line
 }

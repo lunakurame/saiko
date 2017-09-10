@@ -77,4 +77,24 @@ export default class LogPlugin extends Plugin {
 			message.content
 		);
 	}
+
+	/** Logs updated messages.
+	 * @listens Discord.Client#messageUpdate
+	 * @param {Discord.Message} oldMessage - message before the update
+	 * @param {Discord.Message} newMessage - message after the update
+	 * @returns {void} */
+	onMessageUpdate(oldMessage, newMessage) {
+		this.saiko.logger.log(
+			' Updated message (old) '.bgYellow.black,
+			LogPlugin.formatMessageSource(oldMessage),
+			LogPlugin.formatMessageAuthor(oldMessage),
+			oldMessage.content
+		);
+		this.saiko.logger.log(
+			' Updated message (new) '.bgYellow.black,
+			LogPlugin.formatMessageSource(newMessage),
+			LogPlugin.formatMessageAuthor(newMessage),
+			newMessage.content
+		);
+	}
 }

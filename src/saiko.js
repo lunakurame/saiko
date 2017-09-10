@@ -13,13 +13,13 @@ export default class Saiko {
 	 * @param {Logger} logger - a Logger object used to log everything
 	 * @returns {Saiko} - a Saiko object */
 	constructor(dataPath, logger) {
-		this.dataPath   = tools.addTrailingSlash(dataPath);
-		this.data       = {};
-		this.plugins    = [];
-		this.logger     = logger;
-		this.client     = new Discord.Client;
 		this.libName    = process.env.npm_package_name; // eslint-disable-line no-process-env
 		this.libVersion = process.env.npm_package_version; // eslint-disable-line no-process-env
+		this.dataPath   = tools.addTrailingSlash(dataPath);
+		this.logger     = logger;
+		this.client     = new Discord.Client;
+		this.data       = {};
+		this.plugins    = [];
 	}
 
 	/** Returns bot's name. If it's not specified, returns the library's name instead.
@@ -229,7 +229,7 @@ export default class Saiko {
 	enablePlugins() {
 		this.logger.debug('Saiko#enablePlugins', 'Binding events to plugins...');
 
-		const eventNames = ['message', 'messageDelete'];
+		const eventNames = ['message', 'messageDelete', 'messageUpdate'];
 
 		for (const eventName of eventNames)
 			this.client.on(eventName, (...parameters) => {
