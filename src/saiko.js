@@ -247,8 +247,10 @@ export default class Saiko {
 			const sentMessages = this.responses.get(message.id) || [];
 
 			// if the original trigger post got removed and Saiko doesn't wanna edit her response,
+			// or if it got edited and it doesn't trigger any response now,
 			// remove her old response
-			if (eventName === 'messageDelete' && !(response || {}).edits)
+			if ((eventName === 'messageDelete' && !(response || {}).edits) ||
+			    (eventName === 'messageUpdate' && !response))
 				try {
 					while (sentMessages.length > 0) {
 						await sentMessages[0].delete();
