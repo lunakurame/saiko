@@ -1,19 +1,21 @@
+/** @module index */
+
 import Logger from './lib/logger.js';
 import Saiko from './saiko.js';
 import readline from 'readline';
 import * as loader from './lib/loader.js';
 import * as tools from './lib/tools.js';
 
+const dataPath = './data/';
+const logger = new Logger({showDebug: true});
+
 /** Checks the bot's config and generates it if it's missing, and starts the bot.
  * @returns {Promise<void|Error>} - an empty promise, just to use the await operator */
 async function main() {
-	const dataPath = './data/';
-	const logger = new Logger({showDebug: true});
-
 	try {
 		await loader.isFileReadable(`${dataPath}data.json`);
 	} catch (error) {
-		logger.warn('Index', 'Missing configuration data');
+		logger.warn('index~main', 'Missing configuration data');
 
 		const cli = readline.createInterface({
 			input: process.stdin,
@@ -86,7 +88,7 @@ async function main() {
 			cli.write('Data saved.\n\n');
 			cli.close();
 		} catch (error) {
-			logger.panic('Index', error.message);
+			logger.panic('index~main', error.message);
 		}
 	}
 
@@ -102,14 +104,16 @@ async function main() {
 			try {
 				await saiko.login();
 			} catch (error) {
-				logger.panic('Index', 'Cannot log in', error);
+				logger.panic('index~main', 'Cannot log in', error);
 			}
 		} catch (error) {
-			logger.panic('Index', 'Cannot load plugins', error);
+			logger.panic('index~main', 'Cannot load plugins', error);
 		}
 	} catch (error) {
-		logger.panic('Index', 'Cannot load data', error);
+		logger.panic('index~main', 'Cannot load data', error);
 	}
 }
 
-main();
+main().catch(error => {
+	logger.panic('index', 'Unexpected error', error);
+});
