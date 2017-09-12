@@ -260,13 +260,24 @@ export default class Saiko {
 					this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
 				}
 
+			const doesPostHaveFiles = post => post.some(param =>
+				typeof param === 'object' &&
+				param &&
+				((Array.isArray(param.files) && param.files.length > 0) || param.file)
+			);
+			const doesMessageHaveFiles = message => message.attachments.size > 0;
+
 			if (response) {
 				// process edits (this might involve editing, deleting and sending new posts)
 				if (response.edits.length > 0)
 					// if the number of edits is greater than the number of already sent posts,
 					// wipe everything and post the edits as new posts coz there is no way to
 					// edit the old ones anyway
-					if (response.edits.length > sentMessages.length) {
+					// also remove and resend if there are some files sent / about to be send
+					// because discord doesn't allow editing attachments
+					if (response.edits.length > sentMessages.length ||
+					    sentMessages.some(doesMessageHaveFiles) ||
+					    response.edits.some(doesPostHaveFiles)) {
 						try {
 							while (sentMessages.length > 0) {
 								await sentMessages[0].delete();
@@ -288,6 +299,13 @@ export default class Saiko {
 						} catch (error) {
 							this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
 						}
+
+						// remove old embeds
+						for (const post of response.edits)
+							if (post.length === 1 && typeof post[0] === 'string')
+								post.push({
+									embed: null
+								});
 
 						try {
 							for (const [index, post] of response.edits.entries()) {
