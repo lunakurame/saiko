@@ -51,7 +51,8 @@ export default class Plugin {
 	 * @returns {boolean} - true if the trigger matches the message */
 	doesMessageTriggerCommand(message, {trigger}) {
 		return [
-			typeof trigger === 'string' && message.content.toLowerCase().startsWith(`${this.prefix}${trigger}`),
+			typeof trigger === 'string' && message.content.toLowerCase() === `${this.prefix}${trigger}`,
+			typeof trigger === 'string' && message.content.toLowerCase().startsWith(`${this.prefix}${trigger} `),
 			typeof trigger === 'function' && trigger(message),
 			trigger instanceof RegExp && message.content.match(trigger)
 		].some(condition => condition);
