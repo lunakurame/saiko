@@ -74,7 +74,7 @@ export function parseCommandParameters(text) {
 		.map(param => param.startsWith('"') && param.endsWith('"') ?
 			param
 				.slice(1, -1)
-				.replace(/[\\]+/g, backslashes => backslashes.slice(1)) :
+				.replace(/\\+/g, backslashes => backslashes.slice(1)) :
 			param
 		);
 }
