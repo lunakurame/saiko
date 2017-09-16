@@ -4,7 +4,7 @@ import './extension/Object.deepAssign.js';
 import Discord from 'discord.js';
 import * as discordTools from './lib/discord-tools.js';
 import * as loader from './lib/loader.js';
-import * as log from './modules/log.js';
+import * as log from './functions/log.js';
 import * as tools from './lib/tools.js';
 
 /** Saiko's main class. */

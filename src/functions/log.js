@@ -1,5 +1,5 @@
 /** Logging messages to the system console.
- * @module modules/log */
+ * @module functions/log */
 
 import colors from 'colors/safe';
 
@@ -15,8 +15,7 @@ import colors from 'colors/safe';
  * @param {string} [options.title.function] - function which reports this message
  * @param {string} [options.text] - text displayed next to the title
  * @param {array} [options.messages] - an array of messages printed to the console
- * @returns {void}
- * @impure - prints to the console, uses the process global variable */
+ * @returns {void} */
 const handleMessage = output => type => ({title, text, messages}) => {
 	output(
 		(type.decorator || colors.bgWhite.black)(` ${type.text} `) +

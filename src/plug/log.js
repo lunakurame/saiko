@@ -2,7 +2,7 @@
 
 import Plugin from '../plugin.js';
 import colors from 'colors/safe';
-import * as log from '../modules/log.js';
+import * as log from '../functions/log.js';
 
 /** A plugin to log discord messages. */
 export default class LogPlugin extends Plugin {

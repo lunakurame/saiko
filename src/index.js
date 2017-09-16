@@ -3,7 +3,7 @@
 import Saiko from './saiko.js';
 import readline from 'readline';
 import * as loader from './lib/loader.js';
-import * as log from './modules/log.js';
+import * as log from './functions/log.js';
 import * as tools from './lib/tools.js';
 
 const dataPath = './data/';
