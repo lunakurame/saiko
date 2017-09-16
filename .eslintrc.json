@@ -62,6 +62,9 @@
 		"no-unused-vars": "warn",
 		"nonblock-statement-body-position": ["error", "below"],
 		"object-curly-newline": "off",
+		"object-property-newline": ["error", {
+			"allowMultiplePropertiesPerLine": true
+		}],
 		"one-var": ["error", "never"],
 		"operator-linebreak": ["error", "after"],
 		"padded-blocks": ["error", "never"],

@@ -4,19 +4,18 @@ import './extension/Object.deepAssign.js';
 import Discord from 'discord.js';
 import * as discordTools from './lib/discord-tools.js';
 import * as loader from './lib/loader.js';
+import * as log from './modules/log.js';
 import * as tools from './lib/tools.js';
 
 /** Saiko's main class. */
 export default class Saiko {
 	/** Creates a new Saiko object.
 	 * @param {string} dataPath - path to the data folder
-	 * @param {Logger} logger - a Logger object used to log everything
 	 * @returns {Saiko} - a Saiko object */
-	constructor(dataPath, logger) {
+	constructor(dataPath) {
 		this.libName    = process.env.npm_package_name; // eslint-disable-line no-process-env
 		this.libVersion = process.env.npm_package_version; // eslint-disable-line no-process-env
 		this.dataPath   = tools.addTrailingSlash(dataPath);
-		this.logger     = logger;
 		this.client     = new Discord.Client;
 		this.responses  = new Discord.Collection;
 		this.data       = {};
@@ -52,7 +51,10 @@ export default class Saiko {
 	/** Loads the data.
 	 * @returns {Promise<object|Error>} - a promise to the data object */
 	async loadData() {
-		this.logger.debug('Saiko#loadData', 'Loading data...');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'loadData'},
+			text: 'Loading data...'
+		});
 
 		const data = await loader.loadJSON(`${this.dataPath}data.json`);
 
@@ -64,10 +66,13 @@ export default class Saiko {
 			.filter(property => data[property] === undefined);
 
 		for (const property of missingRequiredProperties)
-			this.logger.error('Saiko#loadData', `Undefined required property: ${property}`);
+			log.error({
+				title: {module: 'Saiko', separator: '#', function: 'loadData'},
+				text: `Undefined required property: ${property}`
+			});
 
 		if (missingRequiredProperties.length > 0)
-			this.logger.panic('Saiko#loadData', 'Some required properties are undefined');
+			throw new Error('Some required properties are undefined');
 
 		for (const property of arrayProperties)
 			if (!Array.isArray(data[property]))
@@ -79,14 +84,20 @@ export default class Saiko {
 
 		this.data = data;
 
-		this.logger.debug('Saiko#loadData', 'Data loaded');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'loadData'},
+			text: 'Data loaded'
+		});
 		return data;
 	}
 
 	/** Saves the data.
 	 * @returns {Promise<object|Error>} - a promise to the serialized data */
 	async saveData() {
-		this.logger.debug('Saiko#saveData', 'Saving data...');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'saveData'},
+			text: 'Saving data...'
+		});
 
 		this.clearData();
 		this.updateGuildNames();
@@ -94,7 +105,10 @@ export default class Saiko {
 
 		const serializedData = await loader.saveJSON(`${this.dataPath}data.json`, this.data);
 
-		this.logger.debug('Saiko#saveData', 'Data saved');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'saveData'},
+			text: 'Data saved'
+		});
 		return serializedData;
 	}
 
@@ -196,7 +210,10 @@ export default class Saiko {
 	/** Loads all plugins from plug/*.js.
 	 * @returns {Promise<array|Error>} - a promise to an array of loaded plugins */
 	async loadPlugins() {
-		this.logger.debug('Saiko#loadPlugins', 'Loading plugins...');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'loadPlugins'},
+			text: 'Loading plugins...'
+		});
 
 		const pluginsDirName = 'plug';
 		const directory = await loader.listDirectory(`./build/${pluginsDirName}`);
@@ -207,28 +224,40 @@ export default class Saiko {
 			const pluginName   = [...fileName].slice(0, -3).join('');
 			const fullFileName = `./${pluginsDirName}/${fileName}`;
 
-			this.logger.debug('Saiko#loadPlugins', `Loading plugin "${pluginName}"...`);
+			log.debug({
+				title: {module: 'Saiko', separator: '#', function: 'loadPlugins'},
+				text: `Loading plugin "${pluginName}"...`
+			});
 
 			try {
 				const PluginClass = require(fullFileName).default; // eslint-disable-line global-require
 
 				plugins.push(new PluginClass(this));
 			} catch (error) {
-				this.logger.error('Saiko#loadPlugins', `Cannot load plugin "${pluginName}"`);
+				log.error({
+					title: {module: 'Saiko', separator: '#', function: 'loadPlugins'},
+					text: `Cannot load plugin "${pluginName}"`
+				});
 				throw error;
 			}
 		}
 
 		this.plugins = plugins;
 
-		this.logger.debug('Saiko#loadPlugins', 'Plugins loaded');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'loadPlugins'},
+			text: 'Plugins loaded'
+		});
 		return plugins;
 	}
 
 	/** Enables all loaded plugins (binds all the Discord.js events).
 	 * @returns {void} */
 	enablePlugins() {
-		this.logger.debug('Saiko#enablePlugins', 'Binding events to plugins...');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'enablePlugins'},
+			text: 'Binding events to plugins...'
+		});
 
 		const handleEvent = async (eventName, ...parameters) => {
 			const [message] = parameters;
@@ -257,7 +286,11 @@ export default class Saiko {
 						sentMessages.shift();
 					}
 				} catch (error) {
-					this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
+					log.error({
+						title: {module: 'Saiko', separator: '#', function: 'enablePlugins'},
+						text: 'Cannot delete a message',
+						messages: [error]
+					});
 				}
 
 			const doesPostHaveFiles = post => post.some(param =>
@@ -284,7 +317,11 @@ export default class Saiko {
 								sentMessages.shift();
 							}
 						} catch (error) {
-							this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
+							log.error({
+								title: {module: 'Saiko', separator: '#', function: 'enablePlugins'},
+								text: 'Cannot delete a message',
+								messages: [error]
+							});
 						}
 
 						for (const post of response.edits)
@@ -297,7 +334,11 @@ export default class Saiko {
 								sentMessages.pop();
 							}
 						} catch (error) {
-							this.logger.error('Saiko#enablePlugins', 'Cannot delete a message', error);
+							log.error({
+								title: {module: 'Saiko', separator: '#', function: 'enablePlugins'},
+								text: 'Cannot delete a message',
+								messages: [error]
+							});
 						}
 
 						// remove old embeds
@@ -313,7 +354,11 @@ export default class Saiko {
 								sentMessages[index] = sentMessage;
 							}
 						} catch (error) {
-							this.logger.error('Saiko#enablePlugins', 'Cannot edit a message', error);
+							log.error({
+								title: {module: 'Saiko', separator: '#', function: 'enablePlugins'},
+								text: 'Cannot edit a message',
+								messages: [error]
+							});
 						}
 					}
 
@@ -323,7 +368,11 @@ export default class Saiko {
 						const sentMessage = await channel.send(...post);
 						sentMessages.push(sentMessage);
 					} catch (error) {
-						this.logger.error('Saiko#enablePlugins', 'Cannot send a message', error);
+						log.error({
+							title: {module: 'Saiko', separator: '#', function: 'enablePlugins'},
+							text: 'Cannot send a message',
+							messages: [error]
+						});
 					}
 
 				this.responses.set(message.id, sentMessages);
@@ -336,7 +385,10 @@ export default class Saiko {
 		for (const eventName of eventNames)
 			this.client.on(eventName, (...paramaters) => handleEvent(eventName, ...paramaters));
 
-		this.logger.debug('Saiko#enablePlugins', 'Events binded to plugins');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'enablePlugins'},
+			text: 'Events binded to plugins'
+		});
 	}
 
 	/** Checks if a plugin is enabled on a given channel or a guild.
@@ -352,11 +404,20 @@ export default class Saiko {
 	/** Logs in using the token loaded from the bot's data file.
 	 * @returns {Promise<string|Error>} - a promise to the login token */
 	async login() {
-		this.logger.debug('Saiko#login', 'Logging in...');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'login'},
+			text: 'Logging in...'
+		});
+
+		if (this.data.token === '')
+			throw new Error('Token is not defined');
 
 		const token = await this.client.login(this.data.token);
 
-		this.logger.debug('Saiko#login', 'Logged in');
+		log.debug({
+			title: {module: 'Saiko', separator: '#', function: 'login'},
+			text: 'Logged in'
+		});
 		return token;
 	}
 }
