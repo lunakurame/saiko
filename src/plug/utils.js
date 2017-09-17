@@ -27,7 +27,7 @@ export default class UtilsPlugin extends Plugin {
 					const [, ...users] = params;
 
 					return users
-						.map(user => discordTools.getUser(message.channel.guild || message.channel, user) || user)
+						.map(user => discordTools.getUser(message.channel.guild || message.channel)(user) || user)
 						.map(user => typeof user === 'string' ?
 							this.getEmbed({
 								title: 'User',
