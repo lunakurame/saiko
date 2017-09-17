@@ -2,7 +2,7 @@
 
 import Saiko from './saiko.js';
 import readline from 'readline';
-import * as loader from './lib/loader.js';
+import * as filesystem from './functions/filesystem.js';
 import * as log from './functions/log.js';
 import * as tools from './lib/tools.js';
 
@@ -12,7 +12,7 @@ const dataPath = './data/';
  * @returns {Promise<void|Error>} - an empty promise, just to use the await operator */
 async function main() {
 	try {
-		await loader.isFileReadable(`${dataPath}data.json`);
+		await filesystem.checkFileReadable(`${dataPath}data.json`);
 	} catch (error) {
 		log.warn({
 			title: {module: 'index', function: 'main'},
@@ -80,12 +80,12 @@ async function main() {
 		cli.write('\nSaving data...\n');
 
 		try {
-			await loader.isFileWritable(dataPath);
+			await filesystem.checkFileWritable(dataPath);
 		} catch (error) {
-			await loader.createDirectory(dataPath, 0o750);
+			await filesystem.createDirectory(0o750)(dataPath);
 		}
 
-		await loader.saveJSON(`${dataPath}data.json`, data);
+		await filesystem.serializeAndSaveJSON(data)(`${dataPath}data.json`);
 		cli.write('Data saved.\n\n');
 		cli.close();
 	}

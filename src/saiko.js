@@ -3,7 +3,7 @@
 import './extension/Object.deepAssign.js';
 import Discord from 'discord.js';
 import * as discord from './functions/discord.js';
-import * as loader from './lib/loader.js';
+import * as filesystem from './functions/filesystem.js';
 import * as log from './functions/log.js';
 import * as tools from './lib/tools.js';
 
@@ -56,7 +56,7 @@ export default class Saiko {
 			text: 'Loading data...'
 		});
 
-		const data = await loader.loadJSON(`${this.dataPath}data.json`);
+		const data = await filesystem.loadJSON(`${this.dataPath}data.json`);
 
 		const requiredProperties = ['token'];
 		const arrayProperties    = [];
@@ -103,7 +103,7 @@ export default class Saiko {
 		this.updateGuildNames();
 		this.updateChannelNames();
 
-		const serializedData = await loader.saveJSON(`${this.dataPath}data.json`, this.data);
+		const serializedData = await filesystem.serializeAndSaveJSON(this.data)(`${this.dataPath}data.json`);
 
 		log.debug({
 			title: {module: 'Saiko', separator: '#', function: 'saveData'},
@@ -216,7 +216,7 @@ export default class Saiko {
 		});
 
 		const pluginsDirName = 'plug';
-		const directory = await loader.listDirectory(`./build/${pluginsDirName}`);
+		const directory = await filesystem.listDirectory(`./build/${pluginsDirName}`);
 		const fileNames = directory.filter(fileName => fileName.endsWith('.js'));
 		const plugins = [];
 
