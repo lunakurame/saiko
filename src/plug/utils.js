@@ -1,7 +1,7 @@
 /** @module plug/utils */
 
 import Plugin from '../plugin.js';
-import * as discordTools from '../lib/discord-tools.js';
+import * as discord from '../functions/discord.js';
 import * as tools from '../lib/tools.js';
 
 /** A plugin to manage other plugins. */
@@ -27,7 +27,7 @@ export default class UtilsPlugin extends Plugin {
 					const [, ...users] = params;
 
 					return users
-						.map(user => discordTools.getUser(message.channel.guild || message.channel)(user) || user)
+						.map(user => discord.getUser(message.channel.guild || message.channel)(user) || user)
 						.map(user => typeof user === 'string' ?
 							this.getEmbed({
 								title: 'User',

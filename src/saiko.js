@@ -2,7 +2,7 @@
 
 import './extension/Object.deepAssign.js';
 import Discord from 'discord.js';
-import * as discordTools from './lib/discord-tools.js';
+import * as discord from './functions/discord.js';
 import * as loader from './lib/loader.js';
 import * as log from './functions/log.js';
 import * as tools from './lib/tools.js';
@@ -198,7 +198,7 @@ export default class Saiko {
 	 * @param {Place} place - the place which triggered that function
 	 * @returns {object} - plugin's config */
 	getPluginConfig(plugin, place) {
-		const placeType = discordTools.getPlaceType(place);
+		const placeType = discord.getPlaceType(place);
 
 		const placeConfig =
 			placeType === 'guild'                                ? this.getGuildConfig(place)   :

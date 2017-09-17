@@ -1,5 +1,5 @@
 /** Functions using discord.js.
- * @module lib/tools-discord */
+ * @module functions/discord */
 
 import Discord from 'discord.js';
 
