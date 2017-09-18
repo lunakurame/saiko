@@ -4,7 +4,7 @@ import Saiko from './saiko.js';
 import readline from 'readline';
 import * as filesystem from './functions/filesystem.js';
 import * as log from './functions/log.js';
-import * as tools from './lib/tools.js';
+import * as string from './functions/string.js';
 
 const dataPath = './data/';
 
@@ -51,7 +51,7 @@ async function main() {
 
 		const data = {
 			dataVersion: '0.1.0',
-			name: tools.toUpperCaseFirstChar(process.env.npm_package_name), // eslint-disable-line no-process-env
+			name: string.toUpperCaseFirstChar(process.env.npm_package_name), // eslint-disable-line no-process-env
 			version: process.env.npm_package_version, // eslint-disable-line no-process-env
 			token: '',
 			defaults: {

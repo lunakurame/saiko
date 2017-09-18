@@ -2,7 +2,7 @@
 
 import '../extension/Object.deepAssign.js';
 import Plugin from '../plugin.js';
-import * as tools from '../lib/tools.js';
+import * as string from '../functions/string.js';
 
 /** A plugin to manage other plugins. */
 export default class AdminPlugin extends Plugin {
@@ -46,7 +46,7 @@ export default class AdminPlugin extends Plugin {
 						fields: Array.from(message.guild.members.values())
 							.filter(member => Plugin.isOperator(member))
 							.map(member => ({
-								name: `${tools.getEmoji(member.user.bot ? 'bot' : 'human')} ${member.nickname || member.user.username}`,
+								name: `${string.getEmoji(member.user.bot ? 'bot' : 'human')} ${member.nickname || member.user.username}`,
 								value: `${member.user.username}#${member.user.discriminator}`
 							}))
 					}) :
@@ -94,7 +94,7 @@ export default class AdminPlugin extends Plugin {
 								const pluginEnabled = this.saiko.isPluginEnabled(plugin, message.channel);
 
 								return {
-									name: `${tools.getEmoji(pluginEnabled ? 'check mark' : 'cross mark')} ${plugin.name}`,
+									name: `${string.getEmoji(pluginEnabled ? 'check mark' : 'cross mark')} ${plugin.name}`,
 									value: plugin.description
 								};
 							})

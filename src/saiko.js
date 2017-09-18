@@ -1,11 +1,14 @@
 /** @module saiko */
+/* eslint max-lines: ["warn", {"max": 310, "skipBlankLines": true, "skipComments": true}] */
 
 import './extension/Object.deepAssign.js';
 import Discord from 'discord.js';
+import * as array from './functions/array.js';
 import * as discord from './functions/discord.js';
 import * as filesystem from './functions/filesystem.js';
 import * as log from './functions/log.js';
-import * as tools from './lib/tools.js';
+import * as object from './functions/object.js';
+import * as string from './functions/string.js';
 
 /** Saiko's main class. */
 export default class Saiko {
@@ -15,7 +18,7 @@ export default class Saiko {
 	constructor(dataPath) {
 		this.libName    = process.env.npm_package_name; // eslint-disable-line no-process-env
 		this.libVersion = process.env.npm_package_version; // eslint-disable-line no-process-env
-		this.dataPath   = tools.addTrailingSlash(dataPath);
+		this.dataPath   = string.addTrailingSlash(dataPath);
 		this.client     = new Discord.Client;
 		this.responses  = new Discord.Collection;
 		this.data       = {};
@@ -112,12 +115,16 @@ export default class Saiko {
 		return serializedData;
 	}
 
-	/** Clears the data object properies from empty objects.
+	/** Clears the data object properties from empty objects.
 	 * @returns {void} */
 	clearData() {
-		for (const property of Object.values(this.data))
-			if (typeof property === 'object' && property !== null)
-				tools.removeEmptyObjects(property);
+		this.data = array.entriesToObject(Object.entries(this.data)
+			.map(entry =>
+				object.isNonNullObject(entry[1]) ?
+					[entry[0], object.removeEmptyObjects(entry[1])] :
+					entry
+			)
+		);
 	}
 
 	/** Updates channels' name, type and, if the channel has a parent guild,
@@ -266,7 +273,7 @@ export default class Saiko {
 
 			for (const plugin of this.plugins)
 				if (this.isPluginEnabled(plugin, channel)) {
-					const pluginResponse = plugin[`on${tools.toUpperCaseFirstChar(eventName)}`](...parameters);
+					const pluginResponse = plugin[`on${string.toUpperCaseFirstChar(eventName)}`](...parameters);
 
 					if (!response && pluginResponse)
 						response = pluginResponse;

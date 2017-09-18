@@ -2,7 +2,7 @@
 
 import Plugin from '../plugin.js';
 import * as discord from '../functions/discord.js';
-import * as tools from '../lib/tools.js';
+import * as string from '../functions/string.js';
 
 /** A plugin to manage other plugins. */
 export default class UtilsPlugin extends Plugin {
@@ -38,7 +38,7 @@ export default class UtilsPlugin extends Plugin {
 									name: user.tag,
 									icon: user.displayAvatarURL
 								},
-								description: `${tools.getEmoji(user.bot ? 'bot' : 'human')} <@!${user.id}>`
+								description: `${string.getEmoji(user.bot ? 'bot' : 'human')} <@!${user.id}>`
 							})
 						)
 						.map(user => [user]);

@@ -6,6 +6,9 @@
 	"extends": "eslint:all",
 	"parserOptions": {
 		"ecmaVersion": 8,
+		"ecmaFeatures": {
+			"experimentalObjectRestSpread": true
+		},
 		"sourceType": "module"
 	},
 	"rules": {
@@ -23,6 +26,7 @@
 			"allowArrowFunctions": true
 		}],
 		"function-paren-newline": "off",
+		"id-length": "off",
 		"indent": ["error", "tab", {
 			"flatTernaryExpressions": true
 		}],

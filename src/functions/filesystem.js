@@ -5,7 +5,7 @@ import fs from 'fs';
 import {promisify} from 'util';
 
 /** Checks if a file exists and has specified permissions (relative to the current process).
- * @param {integer} mode - permissions
+ * @param {number} mode - permissions
  * @param {string} fileName - the file's name
  * @returns {Promise<void|Error>} - a promise to the file name */
 export const checkFileAccess = mode => fileName =>
@@ -24,7 +24,7 @@ export const checkFileExecutable =
 	checkFileAccess(fs.constants.X_OK);
 
 /** Creates a directory.
- * @param {integer} mode - permissions
+ * @param {number} mode - permissions
  * @param {string} path - the path of the new directory
  * @returns {Promise<void|Error>} - a promise */
 export const createDirectory = mode => path =>

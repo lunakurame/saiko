@@ -1,7 +1,7 @@
 /** @module plugin */
 
 import Discord from 'discord.js';
-import * as tools from './lib/tools.js';
+import * as string from './functions/string.js';
 
 /** Defines an "interface" for plugins. All plugins should extend this class.
  * @abstract */
@@ -73,7 +73,7 @@ export default class Plugin {
 		const contentWithoutPrefix = message.content.startsWith(this.prefix) ?
 			message.content.slice(this.prefix.length) :
 			message.content;
-		const commandParams = tools.parseCommandParameters(contentWithoutPrefix);
+		const commandParams = string.parseCommandParameters(contentWithoutPrefix);
 
 		const answer = operator && !Plugin.isOperator(message.member || message.author) ?
 			this.noOperatorPerm() :
