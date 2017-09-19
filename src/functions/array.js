@@ -12,4 +12,4 @@ export const entryToObject = entry =>
  * @param {array} entries - an array of entries
  * @returns {object} - an object with properties definied by those entries */
 export const entriesToObject = entries =>
-	entries.reduce((object, entry) => ({...object, ...entryToObject(entry)}), {});
+	Object.assign({}, ...entries.map(entryToObject));
