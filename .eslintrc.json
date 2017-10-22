@@ -43,6 +43,7 @@
 		}],
 		"max-params": ["warn", 4],
 		"max-statements" : ["warn", 40],
+		"multiline-comment-style": "off",
 		"multiline-ternary": "off",
 		"newline-per-chained-call": "off",
 		"new-parens": "off",
