@@ -3,6 +3,7 @@
 
 import fs from 'fs';
 import {promisify} from 'util';
+import * as object from './object.js';
 
 /** Checks if a file exists and has specified permissions (relative to the current process).
  * @param {number} mode - permissions
@@ -59,4 +60,4 @@ export const saveJSON = serializer => data => async fileName => {
 };
 
 export const serializeAndSaveJSON =
-	saveJSON(data => `${JSON.stringify(data, null, '\t')}\n`);
+	saveJSON(data => `${object.stringify(data)}\n`);

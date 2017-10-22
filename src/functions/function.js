@@ -15,6 +15,14 @@ export const compose = (...functions) =>
 			f(g(...params))
 	);
 
+/** If func is a function, it runs it and returns its result. If func is not a
+ *  function, returns func.
+ * @param {*} func
+ * @param {...*} parameters
+ * @returns {*} - func's result */
+export const evaluate = func => (...parameters) =>
+	typeof func === 'function' ? func(...parameters) : func;
+
 /** The same as compose but applies parameter from left to right.
  * @param {...function} functions - the functions to compose
  * @returns {function} - the function composing all input functions */

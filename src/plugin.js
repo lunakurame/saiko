@@ -1,6 +1,7 @@
 /** @module plugin */
 
 import Discord from 'discord.js';
+import * as func from './functions/function.js';
 import * as string from './functions/string.js';
 
 /** Defines an "interface" for plugins. All plugins should extend this class.
@@ -67,18 +68,11 @@ export default class Plugin {
 		const defaultHelp = this.getEmbed({
 			title: `This command doesn't have a description.`
 		});
-		const expandFunction = (thing, ...parameters) =>
-			typeof thing === 'function' ? thing(...parameters) : thing;
-
-		const contentWithoutPrefix = message.content.startsWith(this.prefix) ?
-			message.content.slice(this.prefix.length) :
-			message.content;
-		const commandParams = string.parseCommandParameters(contentWithoutPrefix);
-
+		const commandParams = string.parseCommandParameters(string.stripStart(this.prefix)(message.content));
 		const answer = operator && !Plugin.isOperator(message.member || message.author) ?
 			this.noOperatorPerm() :
-			expandFunction(action             , message, ...commandParams) ||
-			expandFunction(help || defaultHelp, message, ...commandParams);
+			func.evaluate(action)(message, ...commandParams) ||
+			func.evaluate(help || defaultHelp)(message, ...commandParams);
 		const posts = Array.isArray(answer) ?
 			answer.every(Array.isArray) ? answer : [answer] :
 			[[answer]];

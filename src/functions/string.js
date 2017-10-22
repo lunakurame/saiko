@@ -48,6 +48,13 @@ export const parseCommandParameters = text =>
 			param
 		);
 
+/** Removes a prefix from string.
+ * @param {string} prefix
+ * @param {string} text
+ * @returns {string} - text without the prefix */
+export const stripStart = prefix => text =>
+	text.startsWith(prefix) ? text.slice(prefix.length) : text;
+
 /** Capitalizes first character of a string.
  * @param {string} text - input text
  * @returns {string} - the same text, but with the first character capitalized */

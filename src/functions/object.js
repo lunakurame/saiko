@@ -38,3 +38,9 @@ export const removeSomeProperties = keys => object =>
 	array.entriesToObject(Object.entries(object)
 		.filter(([key]) => !keys.includes(key))
 	);
+
+/** Stringifies a valid JSON object.
+ * @param {object} object
+ * @returns {string} - JSON */
+export const stringify = object =>
+	JSON.stringify(object, null, '\t');
