@@ -1,15 +1,14 @@
 {
 	"name": "saiko",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "A Discord bot for psychos.",
-	"main": "build/index.js",
+	"main": "build/server.js",
 	"scripts": {
-		"build": "babel src -d build",
-		"build:doc": "jsdoc -P package.json -R README.md -r -d doc src",
-		"build:watch": "babel src -d build --watch",
-		"lint": "eslint src",
-		"start": "node build/index.js",
-		"test": "npm run lint"
+		"build": "coffee -ctMo build src",
+		"build:watch": "coffee -wctMo build src",
+		"build:clean": "rm -rf build",
+		"start": "node build/server.js",
+		"test": "echo No tests yet."
 	},
 	"repository": {
 		"type": "git",
@@ -19,7 +18,7 @@
 		"discord",
 		"bot",
 		"saiko",
-		"javascript",
+		"coffeescript",
 		"node"
 	],
 	"author": "Sai Kurogetsu",
@@ -33,11 +32,9 @@
 		"discord.js": "^11.3.0"
 	},
 	"devDependencies": {
-		"babel-cli": "^6.26.0",
-		"babel-plugin-transform-object-rest-spread": "^6.26.0",
+		"babel-core": "^6.26.0",
 		"babel-preset-env": "^1.6.0",
-		"eslint": "^4.17.0",
-		"jsdoc": "^3.5.4"
+		"coffeescript": "^2.2.0"
 	},
 	"engines": {
 		"node": ">=8.0.0"
