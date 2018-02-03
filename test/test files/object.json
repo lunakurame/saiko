@@ -1,0 +1,11 @@
+{
+	"key1": "value1",
+	"key2": 0,
+	"key3": null,
+	"key5": [0, 1, 2],
+	"key6": {
+		"subkey1": 1,
+		"subkey2": 2
+	},
+	"key7": 0
+}
