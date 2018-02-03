@@ -27,6 +27,7 @@
 		}],
 		"function-paren-newline": "off",
 		"id-length": "off",
+		"implicit-arrow-linebreak": "off",
 		"indent": ["error", "tab", {
 			"flatTernaryExpressions": true
 		}],
