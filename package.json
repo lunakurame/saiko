@@ -1,6 +1,6 @@
 {
 	"name": "saiko",
-	"version": "0.1.0",
+	"version": "0.0.0",
 	"description": "A Discord bot for psychos.",
 	"main": "build/index.js",
 	"scripts": {
@@ -19,6 +19,7 @@
 		"discord",
 		"bot",
 		"saiko",
+		"javascript",
 		"node"
 	],
 	"author": "Sai Kurogetsu",
@@ -29,7 +30,7 @@
 	"homepage": "https://github.com/kurogetsusai/saiko#readme",
 	"dependencies": {
 		"colors": "^1.1.2",
-		"discord.js": "^11.2.1"
+		"discord.js": "^11.3.0"
 	},
 	"devDependencies": {
 		"babel-cli": "^6.26.0",

@@ -50,7 +50,6 @@ async function main() {
 		}
 
 		const data = {
-			dataVersion: '0.1.0',
 			name: string.toUpperCaseFirstChar(process.env.npm_package_name), // eslint-disable-line no-process-env
 			version: process.env.npm_package_version, // eslint-disable-line no-process-env
 			token: '',
