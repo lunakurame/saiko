@@ -23,8 +23,25 @@ entries = [
 	]
 	['key7', 0]
 ]
+json = '''
+{
+	"key1": "value1",
+	"key2": 0,
+	"key3": null,
+	"key5": [
+		0,
+		1,
+		2
+	],
+	"key6": {
+		"subkey1": 1,
+		"subkey2": 2
+	},
+	"key7": 0
+}
+'''
 
-deepFreeze object, entries
+deepFreeze object, entries, json
 
 test 'entries', ->
 	(expect objects.entries object).toEqual entries
@@ -47,3 +64,7 @@ test 'map', ->
 	(expect (objects.map -> test: 0) object).toEqual test: 0
 	(expect (objects.map -> test: undefined) object).toEqual test: undefined
 	(expect (objects.map -> {}) object).toEqual {}
+
+test 'stringify', ->
+	(expect objects.stringify object).toEqual json
+	(expect objects.stringify {}).toEqual '{}'

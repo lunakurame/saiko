@@ -38,6 +38,19 @@ test 'includes', ->
 	(expect (arrays.includes null) [null]).toEqual yes
 	(expect (arrays.includes null) array).toEqual no
 
+test 'join', ->
+	array = [0, 1, 2, 3]
+	deepFreeze array
+	(expect (arrays.join '') array).toEqual '0123'
+	(expect (arrays.join ',') array).toEqual '0,1,2,3'
+	(expect (arrays.join ' and ') array).toEqual '0 and 1 and 2 and 3'
+	(expect (arrays.join null) array).toEqual '0123'
+	(expect (arrays.join undefined) array).toEqual '0123'
+	(expect (arrays.join []) array).toEqual '0123'
+	(expect (arrays.join {}) array).toEqual '0123'
+	(expect (arrays.join 0) array).toEqual '0123'
+	(expect (arrays.join 5) array).toEqual '0123'
+
 test 'length', ->
 	array = [0, 1, 2, 3]
 	deepFreeze array

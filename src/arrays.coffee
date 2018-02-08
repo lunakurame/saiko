@@ -10,6 +10,9 @@ export filter = (func) -> (array) ->
 export includes = (item) -> (array) ->
 	item in array
 
+export join = (separator) -> (array) ->
+	array.join(if typeof separator is 'string' then separator else '')
+
 export length = (array) ->
 	array.length
 

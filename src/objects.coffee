@@ -9,3 +9,6 @@ export map = (func) -> (object) ->
 		arrays.reduce (sum, item) -> {sum..., item...}
 		arrays.map ([key, value]) -> func key, value
 	) entries object
+
+export stringify = (object) ->
+	JSON.stringify object, null, '\t'
