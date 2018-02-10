@@ -10,15 +10,9 @@ export initAPI = -> (dispatch) ->
 	try
 		client = new Discord.Client
 
-		dispatch {
-			type: 'inject API'
-			client
-		}
+		dispatch {type: 'inject API', client}
 	catch error
-		dispatch {
-			type: 'fetching API failed'
-			error
-		}
+		dispatch {type: 'fetching API failed', error}
 
 export loadConfig = (fileName) -> (dispatch) ->
 	dispatch type: 'fetch config'
@@ -70,22 +64,13 @@ export loadConfig = (fileName) -> (dispatch) ->
 			logs.error title: "Loading config", text: "Cannot continue without the config file"
 
 			error = new Error 'Missing configuration file'
-			dispatch {
-				type: 'fetching config failed'
-				error
-			}
+			dispatch {type: 'fetching config failed', error}
 
 			return
 
 	try
 		file = await files.loadJSON fileName
 
-		dispatch {
-			type: 'inject config'
-			payload: file
-		}
+		dispatch type: 'inject config', payload: file
 	catch error
-		dispatch {
-			type: 'fetching config failed'
-			error
-		}
+		dispatch {type: 'fetching config failed', error}

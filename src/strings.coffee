@@ -35,7 +35,7 @@ export graphemes = (text) ->
 	array
 
 export count = (text) ->
-	(graphemes text).length
+	arrays.length graphemes text
 
 export lower = (text) ->
 	text.toLowerCase()
@@ -47,7 +47,7 @@ export reverse = (text) ->
 	esrever text
 
 export length = (text) ->
-	(chars text).length
+	arrays.length chars text
 
 export size = (text) ->
 	text.length
