@@ -71,6 +71,7 @@ export loadConfig = (fileName) -> (dispatch) ->
 	try
 		file = await files.loadJSON fileName
 
+		logs.info title: "Loading config", text: "Config loaded"
 		dispatch type: 'inject config', payload: file
 	catch error
 		dispatch {type: 'fetching config failed', error}
@@ -86,7 +87,7 @@ export logIn = (state) -> (dispatch) ->
 		await client.login token
 		userTag = client.user.tag
 
-		logs.debug title: "Logging in", text: "Logged in as #{userTag}"
+		logs.info title: "Logging in", text: "Logged in as #{userTag}"
 		dispatch {type: 'log in', userTag}
 	catch error
 		logs.error title: "Logging in", text: "Logging in failed: #{error.message}"

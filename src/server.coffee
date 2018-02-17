@@ -27,9 +27,13 @@ getLogger = -> # TODO move this somewhere else?
 	}
 
 main = (configFileName) ->
+	debugMode = process.env.SAIKO_DEBUG?
+	middleware = [thunkMiddleware]
+	debugMiddleware = [getLogger()]
+
 	store = redux.createStore reducer, redux.applyMiddleware(
-		thunkMiddleware
-		getLogger()
+		middleware...
+		(if debugMode then debugMiddleware else [])...
 	)
 
 	await store.dispatch actions.loadConfig configFileName
