@@ -74,3 +74,28 @@ export loadConfig = (fileName) -> (dispatch) ->
 		dispatch type: 'inject config', payload: file
 	catch error
 		dispatch {type: 'fetching config failed', error}
+
+export logIn = (state) -> (dispatch) ->
+	client = state.api.client
+	token = state.config.token
+
+	try
+		# TODO remove that workaround when upgrading discord.js
+		# https://github.com/discordjs/discord.js/issues/2011
+		if token is '' then throw Error "An invalid token was provided."
+		await client.login token
+		userTag = client.user.tag
+
+		logs.debug title: "Logging in", text: "Logged in as #{userTag}"
+		dispatch {type: 'log in', userTag}
+	catch error
+		logs.error title: "Logging in", text: "Logging in failed: #{error.message}"
+		dispatch {type: 'logging in failed', error}
+
+export bindAPIEvent = ({client}, eventName, func) -> (dispatch) ->
+	try
+		client.on eventName, func
+
+		dispatch {type: 'bind API event', eventName}
+	catch error
+		dispatch {type: 'binding API event failed', eventName, error}

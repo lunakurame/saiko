@@ -32,8 +32,14 @@ main = (configFileName) ->
 		getLogger()
 	)
 
-	await store.dispatch actions.initAPI()
 	await store.dispatch actions.loadConfig configFileName
+	await store.dispatch actions.initAPI()
+	await store.dispatch actions.bindAPIEvent store.getState().api, 'message', onMessage
+	await store.dispatch actions.logIn store.getState()
+
+onMessage = (message) ->
+	# ignore bots
+	if message.author.bot then return
 
 (main 'data/config.json').catch (error) ->
 	console.error error

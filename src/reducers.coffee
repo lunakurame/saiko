@@ -18,6 +18,10 @@ api = (state = {}, action) ->
 				fetching: no
 				client: action.client
 			}
+		when \
+		'log in', 'logging in failed', \
+		'bind API event', 'binding API event failed'
+			state
 		else
 			state
 
