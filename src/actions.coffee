@@ -1,8 +1,8 @@
 import Discord from 'discord.js'
-import * as files from './files'
-import * as logs from './logs'
-import * as objects from './objects'
-import * as strings from './strings'
+import * as files from './functions/files'
+import * as logs from './functions/logs'
+import * as objects from './functions/objects'
+import * as strings from './functions/strings'
 
 export initAPI = -> (dispatch) ->
 	dispatch type: 'fetch API'
