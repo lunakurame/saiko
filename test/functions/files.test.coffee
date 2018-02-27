@@ -27,6 +27,7 @@ fileJSON = JSON.parse fileData
 deepFreeze file, dir, wrong, fileData, fileJSON
 
 # TODO could use some better tests but git doesn't accept chmod 000'd files
+# TODO test the rest of the functions
 
 test 'checkFileAccess', ->
 	expect.assertions 3
@@ -58,8 +59,6 @@ test 'checkFileExecutable', ->
 	await (expect files.checkFileExecutable dir).resolves.toBeUndefined()
 	await (expect files.checkFileExecutable wrong).rejects.toThrow /no such file/
 
-# TODO test createDirectory
-
 test 'loadFile', ->
 	expect.assertions 4
 	await (expect (files.loadFile 'utf8') file).resolves.toEqual fileData
@@ -78,6 +77,3 @@ test 'loadJSON', ->
 	await (expect files.loadJSON file).resolves.toEqual fileJSON
 	await (expect files.loadJSON dir).rejects.toThrow /illegal operation on a directory/
 	await (expect files.loadJSON wrong).rejects.toThrow /no such file/
-
-# TODO test saveJSON
-# TODO test serializeAndSaveJSON

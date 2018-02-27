@@ -26,13 +26,16 @@ export loadFile = (encoding) -> (fileName) ->
 export loadUTF8File =
 	loadFile 'utf8'
 
-export loadJSON = (fileName) ->
-	JSON.parse await loadUTF8File fileName
+export loadAndParse = (parser) -> (fileName) ->
+	parser await loadUTF8File fileName
 
-export saveJSON = (serializer) -> (data) -> (fileName) ->
+export loadJSON =
+	loadAndParse JSON.parse
+
+export serializeAndSave = (serializer) -> (data) -> (fileName) ->
 	serializedData = serializer data
 	await (promisify fs.writeFile) fileName, serializedData
 	serializedData
 
-export serializeAndSaveJSON =
-	saveJSON (data) -> "#{objects.json data}\n"
+export saveJSON =
+	serializeAndSave (data) -> "#{objects.json data}\n"

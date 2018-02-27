@@ -54,7 +54,7 @@ export loadConfig = (fileName) -> (dispatch) ->
 			catch
 				(files.createDirectory 0o750) dir
 
-			await (files.serializeAndSaveJSON data) fileName
+			await (files.saveJSON data) fileName
 
 			iface.write '\nConfig saved.\n'
 			iface.close()
