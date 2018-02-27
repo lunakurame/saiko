@@ -1,5 +1,9 @@
+import CSON from 'cson-parser'
 import * as arrays from './arrays'
 import * as functions from './functions'
+
+export cson = (object) ->
+	CSON.stringify object, null, '\t'
 
 export entries = (object) ->
 	Object.entries object

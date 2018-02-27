@@ -45,5 +45,5 @@ onMessage = (message) ->
 	# ignore bots
 	if message.author.bot then return
 
-(main 'data/config.json').catch (error) ->
+(main 'data/config.cson').catch (error) ->
 	console.error error

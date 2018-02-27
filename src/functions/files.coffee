@@ -1,3 +1,4 @@
+import CSON from 'cson-parser'
 import fs from 'fs'
 import {promisify} from 'util'
 import * as objects from './objects'
@@ -29,6 +30,9 @@ export loadUTF8File =
 export loadAndParse = (parser) -> (fileName) ->
 	parser await loadUTF8File fileName
 
+export loadCSON =
+	loadAndParse CSON.parse
+
 export loadJSON =
 	loadAndParse JSON.parse
 
@@ -36,6 +40,9 @@ export serializeAndSave = (serializer) -> (data) -> (fileName) ->
 	serializedData = serializer data
 	await (promisify fs.writeFile) fileName, serializedData
 	serializedData
+
+export saveCSON =
+	serializeAndSave (data) -> "#{objects.cson data}\n"
 
 export saveJSON =
 	serializeAndSave (data) -> "#{objects.json data}\n"

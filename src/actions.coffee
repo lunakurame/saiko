@@ -54,7 +54,7 @@ export loadConfig = (fileName) -> (dispatch) ->
 			catch
 				(files.createDirectory 0o750) dir
 
-			await (files.saveJSON data) fileName
+			await (files.saveCSON data) fileName
 
 			iface.write '\nConfig saved.\n'
 			iface.close()
@@ -69,7 +69,7 @@ export loadConfig = (fileName) -> (dispatch) ->
 			return
 
 	try
-		file = await files.loadJSON fileName
+		file = await files.loadCSON fileName
 
 		logs.info title: "Loading config", text: "Config loaded"
 		dispatch type: 'inject config', payload: file

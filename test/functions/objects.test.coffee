@@ -23,6 +23,20 @@ entries = [
 	]
 	['key7', 0]
 ]
+cson = '''
+key1: 'value1'
+key2: 0
+key3: null
+key5: [
+	0
+	1
+	2
+]
+key6:
+	subkey1: 1
+	subkey2: 2
+key7: 0
+'''
 json = '''
 {
 	"key1": "value1",
@@ -41,7 +55,11 @@ json = '''
 }
 '''
 
-deepFreeze object, entries, json
+deepFreeze object, entries, cson, json
+
+test 'cson', ->
+	(expect objects.cson object).toEqual cson
+	(expect objects.cson {}).toEqual '{}'
 
 test 'entries', ->
 	(expect objects.entries object).toEqual entries

@@ -1,7 +1,10 @@
+import CSON from 'cson-parser'
 import deepFreeze from 'deepfreeze'
 import fs from 'fs'
 import * as files from './files'
 
+csonFile = './test/test files/object.cson'
+jsonFile = './test/test files/object.json'
 file = './test/test files/object.json'
 dir = './test/test files'
 wrong = './test/test files/non-existent'
@@ -22,9 +25,10 @@ fileData = '''
 fileBase64 = 'ewoJImtleTEiOiAidmFsdWUxIiwKCSJrZXkyIjogMCwKCSJrZXkzIjogbnVsbCw' +
 'KCSJrZXk1IjogWzAsIDEsIDJdLAoJImtleTYiOiB7CgkJInN1YmtleTEiOiAxLAoJCSJzdWJrZXk' +
 'yIjogMgoJfSwKCSJrZXk3IjogMAp9Cg=='
+fileCSON = CSON.parse fileData
 fileJSON = JSON.parse fileData
 
-deepFreeze file, dir, wrong, fileData, fileJSON
+deepFreeze csonFile, jsonFile, file, dir, wrong, fileData, fileJSON
 
 # TODO could use some better tests but git doesn't accept chmod 000'd files
 # TODO test the rest of the functions
@@ -72,8 +76,14 @@ test 'loadUTF8File', ->
 	await (expect files.loadUTF8File dir).rejects.toThrow /illegal operation on a directory/
 	await (expect files.loadUTF8File wrong).rejects.toThrow /no such file/
 
+test 'loadCSON', ->
+	expect.assertions 3
+	await (expect files.loadCSON csonFile).resolves.toEqual fileCSON
+	await (expect files.loadCSON dir).rejects.toThrow /illegal operation on a directory/
+	await (expect files.loadCSON wrong).rejects.toThrow /no such file/
+
 test 'loadJSON', ->
 	expect.assertions 3
-	await (expect files.loadJSON file).resolves.toEqual fileJSON
+	await (expect files.loadJSON jsonFile).resolves.toEqual fileJSON
 	await (expect files.loadJSON dir).rejects.toThrow /illegal operation on a directory/
 	await (expect files.loadJSON wrong).rejects.toThrow /no such file/
