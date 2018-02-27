@@ -47,6 +47,10 @@ test 'entries', ->
 	(expect objects.entries object).toEqual entries
 	(expect objects.entries {}).toEqual []
 
+test 'json', ->
+	(expect objects.json object).toEqual json
+	(expect objects.json {}).toEqual '{}'
+
 test 'map', ->
 	(expect (objects.map (key, value) -> [key]: value) object).toEqual object
 	(expect (objects.map (key, value) ->
@@ -64,7 +68,3 @@ test 'map', ->
 	(expect (objects.map -> test: 0) object).toEqual test: 0
 	(expect (objects.map -> test: undefined) object).toEqual test: undefined
 	(expect (objects.map -> {}) object).toEqual {}
-
-test 'stringify', ->
-	(expect objects.stringify object).toEqual json
-	(expect objects.stringify {}).toEqual '{}'

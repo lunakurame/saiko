@@ -35,4 +35,4 @@ export saveJSON = (serializer) -> (data) -> (fileName) ->
 	serializedData
 
 export serializeAndSaveJSON =
-	saveJSON (data) -> "#{objects.stringify data}\n"
+	saveJSON (data) -> "#{objects.json data}\n"
